@@ -12,7 +12,7 @@ $finder = Finder::create()
 
 return (new Config())
     ->setRules([
-        '@PSR12' => true,
+        '@PSR2' => true,
         '@Symfony' => true,
         'array_syntax' => ['syntax' => 'short'],
         'no_unused_imports' => true,
