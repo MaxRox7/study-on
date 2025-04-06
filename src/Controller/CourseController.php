@@ -23,4 +23,18 @@ final class CourseController extends AbstractController
             'course' => $course,
         ]);
     }
+
+    #[Route('/courses', name: 'course_show_all')]
+    public function show_all(EntityManagerInterface $entityManager): Response
+    {
+        $course = $entityManager->getRepository(Course::class)->findAll();
+
+        if (!$course) {
+            throw $this->createNotFoundException('Курсы не найден');
+        }
+
+        return $this->render('course/show_all.html.twig', [
+            'course' => $course,
+        ]);
+    }
 }

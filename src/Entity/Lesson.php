@@ -26,12 +26,6 @@ class Lesson
     #[ORM\Column(type: 'integer', options: ['unsigned' => true])]
     private ?int $orderNumber = null;
 
-    #[ORM\Column(length: 50)]
-    private ?string $name_lesson = null;
-
-    #[ORM\Column(length: 50)]
-    private ?string $status_lesson = null;
-
     public function getIdLesson(): ?int
     {
         return $this->idLesson;
@@ -81,30 +75,6 @@ class Lesson
     public function setOrderNumber(?int $orderNumber): static
     {
         $this->orderNumber = $orderNumber;
-
-        return $this;
-    }
-
-    public function getNameLesson(): ?string
-    {
-        return $this->name_lesson;
-    }
-
-    public function setNameLesson(string $name_lesson): static
-    {
-        $this->name_lesson = $name_lesson;
-
-        return $this;
-    }
-
-    public function getStatusLesson(): ?string
-    {
-        return $this->status_lesson;
-    }
-
-    public function setStatusLesson(string $status_lesson): static
-    {
-        $this->status_lesson = $status_lesson;
 
         return $this;
     }

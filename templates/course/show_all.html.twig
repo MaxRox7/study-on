@@ -1,0 +1,23 @@
+{% block title %}Все курсы{% endblock %}
+
+{% block body %}
+    <h1>Все курсы</h1>
+
+    {% if course is empty %}
+        <p>Курсы не найдены.</p>
+    {% else %}
+        <ul>
+            {% for c in course %}
+                <li>
+                    <h2>
+                        <a href="{{ path('course_show', {'idCourse': c.idCourse}) }}">
+                            {{ c.titleCourse }}
+                        </a>
+                    </h2>
+                    <p><strong>Описание:</strong> {{ c.description ? c.description : 'Нет описания' }}</p>
+                </li>
+            {% endfor %}
+        </ul>
+    {% endif %}
+
+{% endblock %}
