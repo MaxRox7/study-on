@@ -19,7 +19,7 @@ class Course
     private ?string $symbolCode = null;
 
     #[ORM\Column(type: 'string', length: 255)]
-    private ?string $title = null;
+    private ?string $title_course = null;
 
     #[ORM\Column(type: 'text', length: 1000, nullable: true)]
     private ?string $description = null;
@@ -49,14 +49,14 @@ class Course
         return $this;
     }
 
-    public function getTitle(): ?string
+    public function getTitleCourse(): ?string
     {
-        return $this->title;
+        return $this->title_course;
     }
 
-    public function setTitle(string $title): static
+    public function setTitleCourse(string $title_course): static
     {
-        $this->title = $title;
+        $this->title_course = $title_course;
 
         return $this;
     }

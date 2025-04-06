@@ -10,23 +10,4 @@ home:
     path: /
     controller: App\Controller\HomeController::index
 
-course_index:
-    path: /courses
-    controller: App\Controller\CourseController::index
 
-course_show:
-    path: /courses/{id}
-    controller: App\Controller\CourseController::show
-    requirements:
-        id: '\d+'
-
-lesson_show:
-    path: /lessons/{id}
-    controller: App\Controller\LessonController::show
-    requirements:
-        id: '\d+'
-
-# Если нужно явно указать маршрут для создания урока с передачей ID курса:
-lesson_create:
-    path: /lessons/create
-    controller: App\Controller\LessonController::create

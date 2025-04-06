@@ -18,13 +18,19 @@ class Lesson
     private ?Course $course = null;
 
     #[ORM\Column(type: 'string', length: 255)]
-    private ?string $title = null;
+    private ?string $title_lesson = null;
 
     #[ORM\Column(type: 'text')]
     private ?string $content = null;
 
     #[ORM\Column(type: 'integer', options: ['unsigned' => true])]
     private ?int $orderNumber = null;
+
+    #[ORM\Column(length: 50)]
+    private ?string $name_lesson = null;
+
+    #[ORM\Column(length: 50)]
+    private ?string $status_lesson = null;
 
     public function getIdLesson(): ?int
     {
@@ -43,14 +49,14 @@ class Lesson
         return $this;
     }
 
-    public function getTitle(): ?string
+    public function getTitleLesson(): ?string
     {
-        return $this->title;
+        return $this->title_lesson;
     }
 
-    public function setTitle(string $title): static
+    public function setTitleLesson(string $title_lesson): static
     {
-        $this->title = $title;
+        $this->title_lesson = $title_lesson;
 
         return $this;
     }
@@ -75,6 +81,30 @@ class Lesson
     public function setOrderNumber(?int $orderNumber): static
     {
         $this->orderNumber = $orderNumber;
+
+        return $this;
+    }
+
+    public function getNameLesson(): ?string
+    {
+        return $this->name_lesson;
+    }
+
+    public function setNameLesson(string $name_lesson): static
+    {
+        $this->name_lesson = $name_lesson;
+
+        return $this;
+    }
+
+    public function getStatusLesson(): ?string
+    {
+        return $this->status_lesson;
+    }
+
+    public function setStatusLesson(string $status_lesson): static
+    {
+        $this->status_lesson = $status_lesson;
 
         return $this;
     }
