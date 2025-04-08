@@ -10,6 +10,7 @@ use Symfony\Component\Form\Extension\Core\Type\SubmitType;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
+use Symfony\Component\Validator\Validator\ValidatorInterface;
 
 final class CourseController extends AbstractController
 {
@@ -70,7 +71,7 @@ final class CourseController extends AbstractController
     }
 
     #[Route('/course/create', name: 'course_create')]
-    public function create_course(Request $request, EntityManagerInterface $entityManager): Response
+    public function create_course(Request $request, EntityManagerInterface $entityManager, ValidatorInterface $validator): Response
     {
         if ($request->isMethod('POST')) {
             // Получаем данные из формыz
@@ -88,6 +89,18 @@ final class CourseController extends AbstractController
             $course->setSymbolCode($symbolCode);
             $course->setTitleCourse($titleCourse);
             $course->setDescription($description);
+
+            $errors = $validator->validate($course);
+
+            if (count($errors) > 0) {
+                /*
+                 * Использует метод __toString в переменной $errors, которая является объектом
+                 * ConstraintViolationList. Это дает хорошую строку для отладки.
+                 */
+                $errorsString = (string) $errors;
+
+                return new Response($errorsString);
+            }
 
             // Сохраняем курс
             $entityManager->persist($course);
@@ -123,7 +136,7 @@ final class CourseController extends AbstractController
     }
 
     #[Route('/courses/{idCourse}/edit', name: 'course_edit')]
-    public function edit(int $idCourse, EntityManagerInterface $entityManager, Request $request): Response
+    public function edit(int $idCourse, EntityManagerInterface $entityManager, Request $request, ValidatorInterface $validator): Response
     {
         $course = $entityManager->getRepository(Course::class)->find($idCourse);
 
@@ -139,6 +152,18 @@ final class CourseController extends AbstractController
             ->getForm();
 
         $form->handleRequest($request);
+
+        $errors = $validator->validate($form);
+
+        if (count($errors) > 0) {
+            /*
+             * Использует метод __toString в переменной $errors, которая является объектом
+             * ConstraintViolationList. Это дает хорошую строку для отладки.
+             */
+            $errorsString = (string) $errors;
+
+            return new Response($errorsString);
+        }
 
         if ($form->isSubmitted() && $form->isValid()) {
             $entityManager->flush();
