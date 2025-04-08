@@ -18,12 +18,31 @@ class Lesson
     private ?Course $course = null;
 
     #[ORM\Column(type: 'string', length: 255)]
+    #[Assert\NotBlank(message: 'Название урока обязательно.')]
+    #[Assert\Length(
+        min: 3,
+        max: 255,
+        minMessage: 'Название урока должно содержать минимум {{ limit }} символа.',
+        maxMessage: 'Название урока не может превышать {{ limit }} символов.'
+    )]
     private ?string $title_lesson = null;
 
     #[ORM\Column(type: 'text')]
+    #[Assert\NotBlank(message: 'Содержимое урока обязательно.')]
+    #[Assert\Length(
+        min: 3,
+        minMessage: 'Содержимое урока должно содержать минимум {{ limit }} символа.'
+    )]
     private ?string $content = null;
 
     #[ORM\Column(type: 'integer', options: ['unsigned' => true])]
+    #[Assert\NotNull(message: 'Порядковый номер обязателен')]
+    #[Assert\Positive(message: 'Порядковый номер должен быть положительным')]
+    #[Assert\Range(
+        min: 1,
+        max: 1000,
+        notInRangeMessage: 'Порядковый номер должен быть от {{ min }} до {{ max }}'
+    )]
     private ?int $orderNumber = null;
 
     public function getIdLesson(): ?int

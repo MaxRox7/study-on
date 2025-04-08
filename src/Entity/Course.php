@@ -16,12 +16,32 @@ class Course
     private ?int $idCourse = null;
 
     #[ORM\Column(type: 'string', length: 255, unique: true)]
+    #[Assert\NotBlank(message: 'Символьный код обязателен.')]
+    #[Assert\Length(
+        min: 3,
+        max: 255,
+        minMessage: 'Символьный код должен содержать минимум {{ limit }} символа.',
+        maxMessage: 'Символьный код не может превышать {{ limit }} символов.'
+    )]
     private ?string $symbolCode = null;
 
     #[ORM\Column(type: 'string', length: 255)]
+    #[Assert\NotBlank(message: 'Название курса обязательно.')]
+    #[Assert\Length(
+        min: 3,
+        max: 255,
+        minMessage: 'Название курса должно содержать минимум {{ limit }} символа.',
+        maxMessage: 'Название курса не может превышать {{ limit }} символов.'
+    )]
     private ?string $title_course = null;
 
     #[ORM\Column(type: 'text', length: 1000, nullable: true)]
+    #[Assert\Length(
+        min: 3,
+        max: 1000,
+        minMessage: 'Описание курса должно содержать минимум {{ limit }} символа.',
+        maxMessage: 'Описание курса не может превышать {{ limit }} символов.'
+    )]
     private ?string $description = null;
 
     #[ORM\OneToMany(mappedBy: 'course', targetEntity: Lesson::class, cascade: ['persist', 'remove'])]

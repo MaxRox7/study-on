@@ -1,0 +1,28 @@
+
+{% block title %}Создание курса{% endblock %}
+
+{% block body %}
+<div class="container mt-4">
+    <h1>Создать курс</h1>
+
+    <form method="post">
+        <div class="mb-3">
+            <label for="symbolCode" class="form-label">Код курса</label>
+            <input type="text" class="form-control" id="symbolCode" name="symbolCode" required>
+        </div>
+
+        <div class="mb-3">
+            <label for="title_course" class="form-label">Название курса</label>
+            <input type="text" class="form-control" id="title_course" name="title_course" required>
+        </div>
+
+        <div class="mb-3">
+            <label for="description" class="form-label">Описание</label>
+            <textarea class="form-control" id="description" name="description" rows="4"></textarea>
+        </div>
+
+        <button type="submit" class="btn btn-primary">Создать</button>
+        <a href="{{ path('course_show_all') }}" class="btn btn-secondary">Назад</a>
+    </form>
+</div>
+{% endblock %}

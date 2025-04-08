@@ -1,0 +1,23 @@
+{% block title %}Редактировать курс{% endblock %}
+
+{% block body %}
+    <div class="container mt-4">
+        <h1>Редактировать курс: {{ course.titleCourse }}</h1>
+
+        {{ form_start(form) }}
+            <div class="mb-3">
+                {{ form_label(form.titleCourse) }}
+                {{ form_widget(form.titleCourse, {'attr': {'class': 'form-control'}}) }}
+            </div>
+            <div class="mb-3">
+                {{ form_label(form.symbolCode) }}
+                {{ form_widget(form.symbolCode, {'attr': {'class': 'form-control'}}) }}
+            </div>
+            <div class="mb-3">
+                {{ form_label(form.description) }}
+                {{ form_widget(form.description, {'attr': {'class': 'form-control'}}) }}
+            </div>
+            <button class="btn btn-success">{{ form_widget(form.save) }}</button>
+        {{ form_end(form) }}
+    </div>
+{% endblock %}

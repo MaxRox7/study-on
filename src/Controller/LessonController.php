@@ -5,6 +5,8 @@ namespace App\Controller;
 use App\Entity\Lesson;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use Symfony\Component\Form\Extension\Core\Type\SubmitType;
+use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
 
@@ -22,6 +24,53 @@ final class LessonController extends AbstractController
         return $this->render('lesson/show.html.twig', [
             'lesson' => $lesson,
             'course' => $lesson->getCourse(),
+        ]);
+    }
+
+    #[Route('/lessons/delete/{idLesson}', name: 'lesson_delete', methods: ['POST'])]
+    public function delete(int $idLesson, EntityManagerInterface $entityManager): Response
+    {
+        $lesson = $entityManager->getRepository(Lesson::class)->find($idLesson);
+
+        if (!$lesson) {
+            throw $this->createNotFoundException('Урок не найден');
+        }
+
+        $courseId = $lesson->getCourse()->getIdCourse();
+
+        $entityManager->remove($lesson);
+        $entityManager->flush();
+
+        return $this->redirectToRoute('course_show', ['idCourse' => $courseId]);
+    }
+
+    #[Route('/lesson/{idLesson}/edit', name: 'lesson_edit')]
+    public function edit(int $idLesson, EntityManagerInterface $entityManager, Request $request): Response
+    {
+        $lesson = $entityManager->getRepository(Lesson::class)->find($idLesson);
+
+        if (!$lesson) {
+            throw $this->createNotFoundException('Урок не найден');
+        }
+
+        $form = $this->createFormBuilder($lesson)
+            ->add('titleLesson')
+            ->add('content')
+            ->add('orderNumber')
+            ->add('save', SubmitType::class, ['label' => 'Сохранить изменения'])
+            ->getForm();
+
+        $form->handleRequest($request);
+
+        if ($form->isSubmitted() && $form->isValid()) {
+            $entityManager->flush();
+
+            return $this->redirectToRoute('course_show', ['idCourse' => $lesson->getCourse()->getIdCourse()]);
+        }
+
+        return $this->render('lesson/edit.html.twig', [
+            'form' => $form->createView(),
+            'lesson' => $lesson,
         ]);
     }
 }
