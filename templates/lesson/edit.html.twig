@@ -1,36 +1,64 @@
-{% block title %}Редактировать урок{% endblock %}
-<link href="{{ asset('build/app.css') }}" rel="stylesheet">
-
 {% block body %}
+<link href="{{ asset('build/app.css') }}" rel="stylesheet">
 <div class="container py-5">
     <div class="row justify-content-center">
         <div class="col-lg-8 col-md-10">
-            <div class="card shadow-lg border-0 rounded-4">
+            <div class="card shadow-lg border-0 rounded-4 overflow-hidden">
                 <div class="card-body p-5">
-                    <h1 class="mb-4 text-center">Редактировать урок: {{ lesson.titleLesson }}</h1>
+                    <h1 class="mb-4 text-center text-primary">Редактировать урок: {{ lesson.titleLesson }}</h1>
 
-                    {{ form_start(form) }}
+                    {{ form_start(form, {'attr': {'novalidate': 'novalidate'}}) }}
+                        <!-- Название урока -->
                         <div class="form-floating mb-4">
-                            {{ form_widget(form.titleLesson, {'attr': {'class': 'form-control', 'placeholder': 'Название урока'}}) }}
-                            {{ form_label(form.titleLesson) }}
-                            {{ form_errors(form.titleLesson) }}
+                            {{ form_widget(form.titleLesson, {
+                                'attr': {
+                                    'class': 'form-control' ~ (form.titleLesson.vars.errors|length ? ' is-invalid' : ''),
+                                    'placeholder': 'Название урока'
+                                }
+                            }) }}
+                            {{ form_label(form.titleLesson, 'Название урока', {'class': 'form-label'}) }}
+                            <div class="invalid-feedback">
+                                {{ form_errors(form.titleLesson)|striptags }}
+                            </div>
                         </div>
 
+                        <!-- Содержимое урока -->
                         <div class="form-floating mb-4">
-                            {{ form_widget(form.content, {'attr': {'class': 'form-control', 'style': 'height: 200px;', 'placeholder': 'Содержимое урока'}}) }}
-                            {{ form_label(form.content) }}
-                            {{ form_errors(form.content) }}
+                            {{ form_widget(form.content, {
+                                'attr': {
+                                    'class': 'form-control' ~ (form.content.vars.errors|length ? ' is-invalid' : ''),
+                                    'style': 'height: 200px;',
+                                    'placeholder': 'Содержимое урока'
+                                }
+                            }) }}
+                            {{ form_label(form.content, 'Содержимое урока', {'class': 'form-label'}) }}
+                            <div class="invalid-feedback">
+                                {{ form_errors(form.content)|striptags }}
+                            </div>
                         </div>
 
+                        <!-- Порядковый номер -->
                         <div class="form-floating mb-4">
-                            {{ form_widget(form.orderNumber, {'attr': {'class': 'form-control', 'placeholder': 'Порядковый номер'}}) }}
-                            {{ form_label(form.orderNumber) }}
-                            {{ form_errors(form.orderNumber) }}
+                            {{ form_widget(form.orderNumber, {
+                                'attr': {
+                                    'class': 'form-control' ~ (form.orderNumber.vars.errors|length ? ' is-invalid' : ''),
+                                    'placeholder': 'Порядковый номер'
+                                }
+                            }) }}
+                            {{ form_label(form.orderNumber, 'Порядковый номер', {'class': 'form-label'}) }}
+                            <div class="invalid-feedback">
+                                {{ form_errors(form.orderNumber)|striptags }}
+                            </div>
                         </div>
 
-                        <div class="d-flex justify-content-between">
-                            <a href="{{ path('course_show', {'idCourse': lesson.course.idCourse}) }}" class="btn btn-outline-secondary px-4">Назад</a>
-                            <button type="submit" class="btn btn-success px-5">Сохранить</button>
+                        <div class="d-flex justify-content-between align-items-center">
+                            <a href="{{ path('course_show', {'idCourse': lesson.course.idCourse}) }}" 
+                               class="btn btn-outline-secondary px-4 py-2 rounded-pill shadow-sm">
+                                Назад
+                            </a>
+                            <button type="submit" class="btn btn-success px-5 py-2 rounded-pill shadow-sm">
+                                Сохранить
+                            </button>
                         </div>
                     {{ form_end(form) }}
                 </div>

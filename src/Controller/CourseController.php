@@ -30,8 +30,9 @@ final class CourseController extends AbstractController
         $lesson = new Lesson();
         $lesson->setCourse($course);
 
+        // Исправлены имена полей согласно сущности
         $form = $this->createFormBuilder($lesson)
-            ->add('title_lesson') // Исправлено на snake_case для соответствия сущности
+            ->add('titleLesson') // camelCase для соответствия сущности
             ->add('content')
             ->add('orderNumber')
             ->add('save', SubmitType::class, ['label' => 'Добавить урок'])
@@ -46,12 +47,10 @@ final class CourseController extends AbstractController
             return $this->redirectToRoute('course_show', ['idCourse' => $idCourse]);
         }
 
-        $lessons = $course->getLessons();
-
         return $this->render('course/show.html.twig', [
             'course' => $course,
             'form' => $form->createView(),
-            'lessons' => $lessons,
+            'lessons' => $course->getLessons(),
         ]);
     }
 

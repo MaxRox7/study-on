@@ -18,7 +18,7 @@ class Lesson
     #[ORM\JoinColumn(name: 'id_course', referencedColumnName: 'id_course', nullable: false)]
     private ?Course $course = null;
 
-    #[ORM\Column(type: 'string', length: 255)]
+    #[ORM\Column(name: 'title_lesson', type: 'string', length: 255)] // Явно указываем имя колонки в БД
     #[Assert\NotBlank(message: 'Название урока обязательно.')]
     #[Assert\Length(
         min: 3,
@@ -26,7 +26,7 @@ class Lesson
         minMessage: 'Название урока должно содержать минимум {{ limit }} символа.',
         maxMessage: 'Название урока не может превышать {{ limit }} символов.'
     )]
-    private ?string $title_lesson = null;
+    private ?string $titleLesson = null; // camelCase для свойства
 
     #[ORM\Column(type: 'text')]
     #[Assert\NotBlank(message: 'Содержимое урока обязательно.')]
@@ -65,12 +65,12 @@ class Lesson
 
     public function getTitleLesson(): ?string
     {
-        return $this->title_lesson;
+        return $this->titleLesson;
     }
 
-    public function setTitleLesson(string $title_lesson): static
+    public function setTitleLesson(string $titleLesson): static
     {
-        $this->title_lesson = $title_lesson;
+        $this->titleLesson = $titleLesson;
 
         return $this;
     }
