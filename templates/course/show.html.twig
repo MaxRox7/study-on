@@ -51,26 +51,30 @@
                     {% endif %}
                 </div>
 
-                <div class="mt-5">
-                    <h4 class="mb-3">Добавить новый урок</h4>
-                    {{ form_start(form) }}
-                        <div class="mb-3">
-                            {{ form_label(form.titleLesson) }}
-                            {{ form_widget(form.titleLesson, {'attr': {'class': 'form-control'}}) }}
-                        </div>
-                        <div class="mb-3">
-                            {{ form_label(form.content) }}
-                            {{ form_widget(form.content, {'attr': {'class': 'form-control'}}) }}
-                        </div>
-                        <div class="mb-3">
-                            {{ form_label(form.orderNumber) }}
-                            {{ form_widget(form.orderNumber, {'attr': {'class': 'form-control'}}) }}
-                        </div>
-                        <div class="mb-3">
-                            {{ form_widget(form.save, {'attr': {'class': 'btn btn-success'}}) }}
-                        </div>
-                    {{ form_end(form) }}
-                </div>
+             <div class="mt-5">
+    <h4 class="mb-3">Добавить новый урок</h4>
+    {{ form_start(form) }}
+        <div class="mb-3">
+            {{ form_label(form.titleLesson) }}
+            {{ form_widget(form.titleLesson, {'attr': {'class': 'form-control' ~ (form_errors(form.titleLesson) ? ' is-invalid' : '')}}) }}
+            {{ form_errors(form.titleLesson) }}
+        </div>
+        <div class="mb-3">
+            {{ form_label(form.content) }}
+            {{ form_widget(form.content, {'attr': {'class': 'form-control' ~ (form_errors(form.content) ? ' is-invalid' : '')}}) }}
+            {{ form_errors(form.content) }}
+        </div>
+        <div class="mb-3">
+            {{ form_label(form.orderNumber) }}
+            {{ form_widget(form.orderNumber, {'attr': {'class': 'form-control' ~ (form_errors(form.orderNumber) ? ' is-invalid' : '')}}) }}
+            {{ form_errors(form.orderNumber) }}
+        </div>
+        <div class="mb-3">
+            {{ form_widget(form.save, {'attr': {'class': 'btn btn-success'}}) }}
+        </div>
+    {{ form_end(form) }}
+</div>
+
             </div>
         </div>
 

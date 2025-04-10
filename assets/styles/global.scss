@@ -1,1 +1,10 @@
 @import "~bootstrap/scss/bootstrap";
+
+/* Красный цвет для текста ошибок */
+.is-invalid {
+    border-color: #dc3545 !important;
+}
+
+.is-invalid + .invalid-feedback {
+    color: #dc3545; /* Красный цвет для текста ошибок */
+}

@@ -1,5 +1,12 @@
 @use "~bootstrap/scss/bootstrap";
 
+.is-invalid {
+    border-color: #dc3545 !important;
+}
+
+.is-invalid + .invalid-feedback {
+    color: #dc3545; /* Красный цвет для текста ошибок */
+}
 
 
 body {

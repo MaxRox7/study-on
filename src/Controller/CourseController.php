@@ -36,17 +36,17 @@ final class CourseController extends AbstractController
             ->add('save', SubmitType::class, ['label' => 'Добавить урок'])
             ->getForm();
 
-            $errors = $validator->validate($lesson);
+        $errors = $validator->validate($course);
 
-            if (count($errors) > 0) {
-                /*
-                 * Использует метод __toString в переменной $errors, которая является объектом
-                 * ConstraintViolationList. Это дает хорошую строку для отладки.
-                 */
-                $errorsString = (string) $errors;
+        if (count($errors) > 0) {
+            /*
+             * Использует метод __toString в переменной $errors, которая является объектом
+             * ConstraintViolationList. Это дает хорошую строку для отладки.
+             */
+            $errorsString = (string) $errors;
 
-                return new Response($errorsString);
-            }
+            return new Response($errorsString);
+        }
 
         // Обрабатываем запрос, если форма отправлена
         $form->handleRequest($request);
@@ -86,14 +86,21 @@ final class CourseController extends AbstractController
     public function create_course(Request $request, EntityManagerInterface $entityManager, ValidatorInterface $validator): Response
     {
         if ($request->isMethod('POST')) {
-            // Получаем данные из формыz
+            // Получаем данные из формы
             $symbolCode = $request->request->get('symbolCode');
             $titleCourse = $request->request->get('title_course');
             $description = $request->request->get('description');
 
             // Проверка на пустые обязательные поля
             if (empty($symbolCode) || empty($titleCourse)) {
-                return new Response('Не все обязательные поля были заполнены', Response::HTTP_BAD_REQUEST);
+                if (empty($symbolCode)) {
+                    $this->addFlash('error_symbolCode', 'Поле "Код курса" обязательно для заполнения');
+                }
+                if (empty($titleCourse)) {
+                    $this->addFlash('error_title_course', 'Поле "Название курса" обязательно для заполнения');
+                }
+
+                return $this->render('course/create.html.twig');
             }
 
             // Создаём новый курс
@@ -102,16 +109,17 @@ final class CourseController extends AbstractController
             $course->setTitleCourse($titleCourse);
             $course->setDescription($description);
 
+            // Валидация
             $errors = $validator->validate($course);
 
             if (count($errors) > 0) {
-                /*
-                 * Использует метод __toString в переменной $errors, которая является объектом
-                 * ConstraintViolationList. Это дает хорошую строку для отладки.
-                 */
-                $errorsString = (string) $errors;
+                foreach ($errors as $error) {
+                    // Добавляем ошибки в flashbag
+                    $this->addFlash('error_'.strtolower($error->getPropertyPath()), $error->getMessage());
+                }
 
-                return new Response($errorsString);
+                // Возвращаем на ту же страницу с ошибками
+                return $this->render('course/create.html.twig');
             }
 
             // Сохраняем курс
