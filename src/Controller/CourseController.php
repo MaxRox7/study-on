@@ -15,7 +15,7 @@ use Symfony\Component\Validator\Validator\ValidatorInterface;
 final class CourseController extends AbstractController
 {
     #[Route('/courses/{idCourse}', name: 'course_show')]
-    public function show(int $idCourse, EntityManagerInterface $entityManager, Request $request): Response
+    public function show(int $idCourse, EntityManagerInterface $entityManager, Request $request, ValidatorInterface $validator): Response
     {
         // Получаем курс по его ID
         $course = $entityManager->getRepository(Course::class)->find($idCourse);
@@ -35,6 +35,18 @@ final class CourseController extends AbstractController
             ->add('orderNumber')
             ->add('save', SubmitType::class, ['label' => 'Добавить урок'])
             ->getForm();
+
+            $errors = $validator->validate($lesson);
+
+            if (count($errors) > 0) {
+                /*
+                 * Использует метод __toString в переменной $errors, которая является объектом
+                 * ConstraintViolationList. Это дает хорошую строку для отладки.
+                 */
+                $errorsString = (string) $errors;
+
+                return new Response($errorsString);
+            }
 
         // Обрабатываем запрос, если форма отправлена
         $form->handleRequest($request);

@@ -1,18 +1,33 @@
-{% block title %}{{ lesson.titleLesson }}{% endblock %}
+
 <link href="{{ asset('build/app.css') }}" rel="stylesheet">
+
 {% block body %}
-    <h1>{{ lesson.titleLesson }}</h1>
+<div class="container py-5">
+    <div class="row justify-content-center">
+        <div class="col-lg-10 col-md-11">
+            <div class="card shadow-lg border-0 rounded-4">
+                <div class="card-body p-5">
+                    <h1 class="mb-3">{{ lesson.titleLesson }}</h1>
 
-    <h2>
-        Курс:
-        <a href="{{ path('course_show', {'idCourse': lesson.course.idCourse}) }}">
-            {{ lesson.course.titleCourse }}
-        </a>
-    </h2>
+                    <h5 class="text-muted mb-4">
+                        Курс:
+                        <a href="{{ path('course_show', {'idCourse': lesson.course.idCourse}) }}" class="text-decoration-none">
+                            {{ lesson.course.titleCourse }}
+                        </a>
+                    </h5>
 
-    <div>
-        {{ lesson.content|raw }}
+                    <div class="lesson-content mb-5">
+                        {{ lesson.content|raw }}
+                    </div>
+
+                    <div class="text-center">
+                        <a href="{{ path('course_show_all') }}" class="btn btn-outline-primary px-4 py-2">
+                            ← Назад ко всем курсам
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
     </div>
-
-    <a href="{{ path('course_show_all') }}">Назад к курсам</a>
+</div>
 {% endblock %}

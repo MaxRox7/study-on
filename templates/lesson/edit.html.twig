@@ -1,29 +1,41 @@
 {% block title %}Редактировать урок{% endblock %}
 <link href="{{ asset('build/app.css') }}" rel="stylesheet">
+
 {% block body %}
-    <div class="container mt-4">
-        <h1>Редактировать урок: {{ lesson.titleLesson }}</h1>
+<div class="container py-5">
+    <div class="row justify-content-center">
+        <div class="col-lg-8 col-md-10">
+            <div class="card shadow-lg border-0 rounded-4">
+                <div class="card-body p-5">
+                    <h1 class="mb-4 text-center">Редактировать урок: {{ lesson.titleLesson }}</h1>
 
-        {{ form_start(form) }}
-            <div class="mb-3">
-                {{ form_label(form.titleLesson) }}
-                {{ form_widget(form.titleLesson, {'attr': {'class': 'form-control'}}) }}
-                {{ form_errors(form.titleLesson) }}
-            </div>
-            
-            <div class="mb-3">
-                {{ form_label(form.content) }}
-                {{ form_widget(form.content, {'attr': {'class': 'form-control'}}) }}
-                {{ form_errors(form.content) }}
-            </div>
-            
-            <div class="mb-3">
-                {{ form_label(form.orderNumber) }}
-                {{ form_widget(form.orderNumber, {'attr': {'class': 'form-control'}}) }}
-                {{ form_errors(form.orderNumber) }}
-            </div>
+                    {{ form_start(form) }}
+                        <div class="form-floating mb-4">
+                            {{ form_widget(form.titleLesson, {'attr': {'class': 'form-control', 'placeholder': 'Название урока'}}) }}
+                            {{ form_label(form.titleLesson) }}
+                            {{ form_errors(form.titleLesson) }}
+                        </div>
 
-            <button class="btn btn-success">Сохранить</button>
-        {{ form_end(form) }}
+                        <div class="form-floating mb-4">
+                            {{ form_widget(form.content, {'attr': {'class': 'form-control', 'style': 'height: 200px;', 'placeholder': 'Содержимое урока'}}) }}
+                            {{ form_label(form.content) }}
+                            {{ form_errors(form.content) }}
+                        </div>
+
+                        <div class="form-floating mb-4">
+                            {{ form_widget(form.orderNumber, {'attr': {'class': 'form-control', 'placeholder': 'Порядковый номер'}}) }}
+                            {{ form_label(form.orderNumber) }}
+                            {{ form_errors(form.orderNumber) }}
+                        </div>
+
+                        <div class="d-flex justify-content-between">
+                            <a href="{{ path('course_show', {'idCourse': lesson.course.idCourse}) }}" class="btn btn-outline-secondary px-4">Назад</a>
+                            <button type="submit" class="btn btn-success px-5">Сохранить</button>
+                        </div>
+                    {{ form_end(form) }}
+                </div>
+            </div>
+        </div>
     </div>
+</div>
 {% endblock %}

@@ -9,6 +9,7 @@ use Symfony\Component\Form\Extension\Core\Type\SubmitType;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
+use Symfony\Component\Validator\Validator\ValidatorInterface;
 
 final class LessonController extends AbstractController
 {
@@ -45,7 +46,7 @@ final class LessonController extends AbstractController
     }
 
     #[Route('/lesson/{idLesson}/edit', name: 'lesson_edit')]
-    public function edit(int $idLesson, EntityManagerInterface $entityManager, Request $request): Response
+    public function edit(int $idLesson, EntityManagerInterface $entityManager, Request $request, ValidatorInterface $validator): Response
     {
         $lesson = $entityManager->getRepository(Lesson::class)->find($idLesson);
 
@@ -59,6 +60,19 @@ final class LessonController extends AbstractController
             ->add('orderNumber')
             ->add('save', SubmitType::class, ['label' => 'Сохранить изменения'])
             ->getForm();
+
+            $errors = $validator->validate($lesson);
+
+            if (count($errors) > 0) {
+                /*
+                 * Использует метод __toString в переменной $errors, которая является объектом
+                 * ConstraintViolationList. Это дает хорошую строку для отладки.
+                 */
+                $errorsString = (string) $errors;
+
+                return new Response($errorsString);
+            }
+
 
         $form->handleRequest($request);
 
