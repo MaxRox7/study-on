@@ -1,5 +1,6 @@
-{% block title %}Создание курса{% endblock %}
+{% block title %}Создать курс{% endblock %}
 <link href="{{ asset('build/app.css') }}" rel="stylesheet">
+
 {% block body %}
 <div class="container mt-5">
     <h1 class="text-center mb-4 text-primary">Создать курс</h1>
@@ -8,8 +9,13 @@
         <form method="post">
             <div class="mb-3">
                 <label for="symbolCode" class="form-label">Код курса</label>
-                <input type="text" class="form-control {% if app.session.flashbag.has('error_symbolCode') %}is-invalid{% endif %}" id="symbolCode" name="symbolCode" value="{{ app.request.get('symbolCode') }}" required>
-                {% for message in app.session.flashbag.get('error_symbolCode') %}
+                <input type="text" 
+                       class="form-control {% if app.session.flashbag.has('error_symbol_code') %}is-invalid{% endif %}" 
+                       id="symbolCode" 
+                       name="symbolCode" 
+                       value="{{ symbolCode ?? '' }}"
+                       placeholder="Введите код курса">
+                {% for message in app.session.flashbag.get('error_symbol_code') %}
                     <div class="invalid-feedback">
                         {{ message }}
                     </div>
@@ -18,7 +24,12 @@
 
             <div class="mb-3">
                 <label for="title_course" class="form-label">Название курса</label>
-                <input type="text" class="form-control {% if app.session.flashbag.has('error_title_course') %}is-invalid{% endif %}" id="title_course" name="title_course" value="{{ app.request.get('title_course') }}" required>
+                <input type="text" 
+                       class="form-control {% if app.session.flashbag.has('error_title_course') %}is-invalid{% endif %}" 
+                       id="title_course" 
+                       name="title_course" 
+                       value="{{ title_course ?? '' }}"
+                       placeholder="Введите название курса">
                 {% for message in app.session.flashbag.get('error_title_course') %}
                     <div class="invalid-feedback">
                         {{ message }}
@@ -28,7 +39,12 @@
 
             <div class="mb-3">
                 <label for="description" class="form-label">Описание</label>
-                <textarea class="form-control {% if app.session.flashbag.has('error_description') %}is-invalid{% endif %}" id="description" name="description" rows="4">{{ app.request.get('description') }}</textarea>
+                <textarea class="form-control {% if app.session.flashbag.has('error_description') %}is-invalid{% endif %}" 
+                          id="description" 
+                          name="description" 
+                          rows="4"
+                          style="height: 150px;"
+                          placeholder="Введите описание курса">{{ description ?? '' }}</textarea>
                 {% for message in app.session.flashbag.get('error_description') %}
                     <div class="invalid-feedback">
                         {{ message }}
@@ -37,14 +53,16 @@
             </div>
 
             <div class="d-flex justify-content-between mt-4">
-                <button type="submit" class="btn btn-primary">Создать</button>
                 <a href="{{ path('course_show_all') }}" class="btn btn-secondary">Назад</a>
+                <button type="submit" class="btn btn-primary">Создать</button>
             </div>
         </form>
     </div>
 </div>
+{% endblock %}
 
 <style>
+    /* Переносим стили в app.css или оставляем здесь если не используется сборка */
     body {
         background-color: #f7f9fc;
         font-family: 'Arial', sans-serif;
@@ -96,14 +114,4 @@
         background-color: #e0e0e0;
         border-color: #d0d0d0;
     }
-
-    .d-flex {
-        display: flex;
-        justify-content: space-between;
-    }
-
-    .mt-4 {
-        margin-top: 1.5rem;
-    }
 </style>
-{% endblock %}

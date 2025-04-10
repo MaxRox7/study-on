@@ -7,48 +7,36 @@ use App\Entity\Lesson;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\Form\Extension\Core\Type\SubmitType;
+use Symfony\Component\Form\Extension\Core\Type\TextareaType;
+use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
+use Symfony\Component\Validator\Constraints\Length;
+use Symfony\Component\Validator\Constraints\NotBlank;
 use Symfony\Component\Validator\Validator\ValidatorInterface;
 
 final class CourseController extends AbstractController
 {
     #[Route('/courses/{idCourse}', name: 'course_show')]
-    public function show(int $idCourse, EntityManagerInterface $entityManager, Request $request, ValidatorInterface $validator): Response
+    public function show(int $idCourse, EntityManagerInterface $entityManager, Request $request): Response
     {
-        // Получаем курс по его ID
         $course = $entityManager->getRepository(Course::class)->find($idCourse);
 
         if (!$course) {
             throw $this->createNotFoundException('Курс не найден');
         }
 
-        // Создаем новый урок
         $lesson = new Lesson();
         $lesson->setCourse($course);
 
-        // Создаем форму для добавления урока
         $form = $this->createFormBuilder($lesson)
-            ->add('titleLesson')
+            ->add('title_lesson') // Исправлено на snake_case для соответствия сущности
             ->add('content')
             ->add('orderNumber')
             ->add('save', SubmitType::class, ['label' => 'Добавить урок'])
             ->getForm();
 
-        $errors = $validator->validate($course);
-
-        if (count($errors) > 0) {
-            /*
-             * Использует метод __toString в переменной $errors, которая является объектом
-             * ConstraintViolationList. Это дает хорошую строку для отладки.
-             */
-            $errorsString = (string) $errors;
-
-            return new Response($errorsString);
-        }
-
-        // Обрабатываем запрос, если форма отправлена
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
@@ -58,13 +46,12 @@ final class CourseController extends AbstractController
             return $this->redirectToRoute('course_show', ['idCourse' => $idCourse]);
         }
 
-        $lessons = $course->getLessons(); // This retrieves all lessons related to the course
+        $lessons = $course->getLessons();
 
-        // Отображаем страницу курса с формой добавления урока
         return $this->render('course/show.html.twig', [
             'course' => $course,
             'form' => $form->createView(),
-            'lessons' => $lessons, // Pass the lessons to the template
+            'lessons' => $lessons,
         ]);
     }
 
@@ -86,55 +73,40 @@ final class CourseController extends AbstractController
     public function create_course(Request $request, EntityManagerInterface $entityManager, ValidatorInterface $validator): Response
     {
         if ($request->isMethod('POST')) {
-            // Получаем данные из формы
             $symbolCode = $request->request->get('symbolCode');
             $titleCourse = $request->request->get('title_course');
             $description = $request->request->get('description');
 
-            // Проверка на пустые обязательные поля
-            if (empty($symbolCode) || empty($titleCourse)) {
-                if (empty($symbolCode)) {
-                    $this->addFlash('error_symbolCode', 'Поле "Код курса" обязательно для заполнения');
-                }
-                if (empty($titleCourse)) {
-                    $this->addFlash('error_title_course', 'Поле "Название курса" обязательно для заполнения');
-                }
-
-                return $this->render('course/create.html.twig');
-            }
-
-            // Создаём новый курс
             $course = new Course();
             $course->setSymbolCode($symbolCode);
             $course->setTitleCourse($titleCourse);
             $course->setDescription($description);
 
-            // Валидация
             $errors = $validator->validate($course);
 
             if (count($errors) > 0) {
                 foreach ($errors as $error) {
-                    // Добавляем ошибки в flashbag
-                    $this->addFlash('error_'.strtolower($error->getPropertyPath()), $error->getMessage());
+                    $propertyPath = $error->getPropertyPath();
+                    // Преобразуем camelCase в snake_case
+                    $fieldName = strtolower(preg_replace('/(?<!^)([A-Z])/', '_$1', $propertyPath));
+                    $this->addFlash('error_'.$fieldName, $error->getMessage());
                 }
 
-                // Возвращаем на ту же страницу с ошибками
-                return $this->render('course/create.html.twig');
+                return $this->render('course/create.html.twig', [
+                    'symbolCode' => $symbolCode,
+                    'title_course' => $titleCourse,
+                    'description' => $description,
+                ]);
             }
 
-            // Сохраняем курс
             $entityManager->persist($course);
             $entityManager->flush();
 
-            // Редирект на страницу курса
             return $this->redirectToRoute('course_show', ['idCourse' => $course->getIdCourse()]);
         }
 
-        // Если это GET-запрос, то показываем форму
         return $this->render('course/create.html.twig');
     }
-
-    // App\Controller\CourseController.php
 
     #[Route('/courses/{idCourse}/delete', name: 'course_delete')]
     public function delete_course(int $idCourse, EntityManagerInterface $entityManager): Response
@@ -156,37 +128,42 @@ final class CourseController extends AbstractController
     }
 
     #[Route('/courses/{idCourse}/edit', name: 'course_edit')]
-    public function edit(int $idCourse, EntityManagerInterface $entityManager, Request $request, ValidatorInterface $validator): Response
+    public function edit(int $idCourse, EntityManagerInterface $entityManager, Request $request, EntityManagerInterface $em): Response
     {
-        $course = $entityManager->getRepository(Course::class)->find($idCourse);
+        $course = $em->getRepository(Course::class)->find($idCourse);
 
         if (!$course) {
             throw $this->createNotFoundException('Курс не найден');
         }
 
         $form = $this->createFormBuilder($course)
-            ->add('titleCourse')
-            ->add('symbolCode')
-            ->add('description')
-            ->add('save', SubmitType::class, ['label' => 'Сохранить изменения'])
+            ->add('titleCourse', TextType::class, [
+                'label' => 'Название курса',
+                'constraints' => [
+                    new NotBlank(['message' => 'Поле обязательно для заполнения']),
+                    new Length([
+                        'min' => 3,
+                        'max' => 255,
+                        'minMessage' => 'Название должно быть не менее {{ limit }} символов',
+                        'maxMessage' => 'Название должно быть не длиннее {{ limit }} символов',
+                    ]),
+                ],
+            ])
+            ->add('symbolCode', TextType::class, [
+                'label' => 'Код курса',
+            ])
+            ->add('description', TextareaType::class, [
+                'label' => 'Описание',
+                'required' => false,
+                'attr' => ['rows' => 8],
+            ])
             ->getForm();
 
         $form->handleRequest($request);
 
-        $errors = $validator->validate($form);
-
-        if (count($errors) > 0) {
-            /*
-             * Использует метод __toString в переменной $errors, которая является объектом
-             * ConstraintViolationList. Это дает хорошую строку для отладки.
-             */
-            $errorsString = (string) $errors;
-
-            return new Response($errorsString);
-        }
-
         if ($form->isSubmitted() && $form->isValid()) {
-            $entityManager->flush();
+            $em->flush();
+            $this->addFlash('success', 'Изменения успешно сохранены');
 
             return $this->redirectToRoute('course_show', ['idCourse' => $idCourse]);
         }

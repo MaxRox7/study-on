@@ -61,18 +61,17 @@ final class LessonController extends AbstractController
             ->add('save', SubmitType::class, ['label' => 'Сохранить изменения'])
             ->getForm();
 
-            $errors = $validator->validate($lesson);
+        $errors = $validator->validate($lesson);
 
-            if (count($errors) > 0) {
-                /*
-                 * Использует метод __toString в переменной $errors, которая является объектом
-                 * ConstraintViolationList. Это дает хорошую строку для отладки.
-                 */
-                $errorsString = (string) $errors;
+        if (count($errors) > 0) {
+            /*
+             * Использует метод __toString в переменной $errors, которая является объектом
+             * ConstraintViolationList. Это дает хорошую строку для отладки.
+             */
+            $errorsString = (string) $errors;
 
-                return new Response($errorsString);
-            }
-
+            return new Response($errorsString);
+        }
 
         $form->handleRequest($request);
 

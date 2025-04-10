@@ -41,7 +41,7 @@ class Course
         min: 3,
         max: 1000,
         minMessage: 'Описание курса должно содержать минимум {{ limit }} символа.',
-        maxMessage: 'Описание курса не может превышать {{ limit }} символов.'
+        maxMessage: 'Описание курса не может превышать {{ limit }} символов.',
     )]
     private ?string $description = null;
 
