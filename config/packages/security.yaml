@@ -12,6 +12,8 @@ security:
         main:
             lazy: true
             provider: users_in_memory
+            pattern: ^/test-error
+            security: false
 
             # activate different ways to authenticate
             # https://symfony.com/doc/current/security.html#the-firewall

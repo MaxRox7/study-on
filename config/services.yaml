@@ -9,9 +9,7 @@ services:
             - '../src/Entity/'
             - '../src/Kernel.php'
 
-    # Явное объявление слушателя
-    App\EventListener\ExceptionListener:
-        tags: [kernel.event_listener]
+
 
     App\EventListener\FixPostgreSQLDefaultSchemaListener:
         tags:
