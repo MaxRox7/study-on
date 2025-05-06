@@ -115,6 +115,7 @@ class LessonControllerTest extends WebTestCase
         $form['form[orderNumber]'] = 1;
 
         // Отправляем форму
+        $client->submit($form);
         // Проверка наличия ошибки для поля symbolCode
         $this->assertResponseIsSuccessful();
         $this->assertSelectorExists('.invalid-feedback'); // проверяем наличие блока ошибки
@@ -122,12 +123,15 @@ class LessonControllerTest extends WebTestCase
         $form['form[titleLesson]'] = 'Title_lesson';
         $form['form[content]'] = '1';
         $form['form[orderNumber]'] = 1;
+        $client->submit($form);
         $this->assertResponseIsSuccessful();
         $this->assertSelectorExists('.invalid-feedback'); // проверяем наличие блока ошибки
 
         $form['form[titleLesson]'] = 'Title_lesson';
         $form['form[content]'] = 'content';
         $form['form[orderNumber]'] = 'a';
+
+        $client->submit($form);
         $this->assertResponseIsSuccessful();
         $this->assertSelectorExists('.invalid-feedback'); // проверяем наличие блока ошибки
     }
@@ -193,6 +197,8 @@ class LessonControllerTest extends WebTestCase
         $form['form[orderNumber]'] = 1;
 
         // Отправляем форму
+
+        $client->submit($form);
         // Проверка наличия ошибки для поля symbolCode
         $this->assertResponseIsSuccessful();
         $this->assertSelectorExists('.invalid-feedback'); // проверяем наличие блока ошибки
@@ -200,12 +206,16 @@ class LessonControllerTest extends WebTestCase
         $form['form[titleLesson]'] = 'Title_lesson';
         $form['form[content]'] = '1';
         $form['form[orderNumber]'] = 1;
+
+        $client->submit($form);
         $this->assertResponseIsSuccessful();
         $this->assertSelectorExists('.invalid-feedback'); // проверяем наличие блока ошибки
 
         $form['form[titleLesson]'] = 'Title_lesson';
         $form['form[content]'] = 'content';
         $form['form[orderNumber]'] = 'a';
+
+        $client->submit($form);
         $this->assertResponseIsSuccessful();
         $this->assertSelectorExists('.invalid-feedback'); // проверяем наличие блока ошибки
     }
