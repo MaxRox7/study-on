@@ -1,6 +1,10 @@
 
-<link href="{{ asset('build/app.css') }}" rel="stylesheet">
+{% extends 'base.html.twig' %}
 
+{% block stylesheets %}
+    {{ parent() }}
+    <link href="{{ asset('build/app.css') }}" rel="stylesheet">
+{% endblock %}
 {% block body %}
 <div class="container py-5">
     <div class="row justify-content-center">

@@ -1,0 +1,29 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Профиль{% endblock %}
+
+{% block body %}
+<div class="container mt-5">
+    <div class="card shadow-sm">
+        <div class="card-header bg-primary text-white">
+            <h2 class="mb-0">Профиль пользователя</h2>
+        </div>
+        <div class="card-body">
+            <ul class="list-group list-group-flush mb-4">
+                <li class="list-group-item">
+                    <strong>Email:</strong> {{ email }}
+                </li>
+                <li class="list-group-item">
+                    <strong>Роль:</strong> {{ role }}
+                </li>
+                <li class="list-group-item">
+                    <strong>Баланс:</strong> {{ balance }} ₽
+                </li>
+            </ul>
+            <a href="{{ path('course_show_all') }}" class="btn btn-secondary">
+                ← Назад
+            </a>
+        </div>
+    </div>
+</div>
+{% endblock %}

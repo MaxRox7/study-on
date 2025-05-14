@@ -1,5 +1,10 @@
 {% extends 'base.html.twig' %}
 
+{% block stylesheets %}
+    {{ parent() }}
+    <link href="{{ asset('build/app.css') }}" rel="stylesheet">
+{% endblock %}
+
 {% block title %}Редактировать курс - {{ course.titleCourse }}{% endblock %}
 
 {% block body %}

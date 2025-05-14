@@ -1,5 +1,13 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Редактировать урок{% endblock %}
+
+{% block stylesheets %}
+    {{ parent() }}
+    <link href="{{ asset('build/app.css') }}" rel="stylesheet">
+{% endblock %}
+
 {% block body %}
-<link href="{{ asset('build/app.css') }}" rel="stylesheet">
 <div class="container py-5">
     <div class="row justify-content-center">
         <div class="col-lg-8 col-md-10">

@@ -14,6 +14,7 @@ use Symfony\Component\Validator\Validator\ValidatorInterface;
 final class LessonController extends AbstractController
 {
     #[Route('/lesson/{idLesson}', name: 'lesson_show')]
+    #[IsGranted('ROLE_USER')]
     public function show(EntityManagerInterface $entityManager, int $idLesson): Response
     {
         $lesson = $entityManager->getRepository(Lesson::class)->find($idLesson);
@@ -29,6 +30,7 @@ final class LessonController extends AbstractController
     }
 
     #[Route('/lessons/delete/{idLesson}', name: 'lesson_delete', methods: ['POST'])]
+    #[IsGranted('ROLE_SUPER_ADMIN')]
     public function delete(int $idLesson, EntityManagerInterface $entityManager): Response
     {
         $lesson = $entityManager->getRepository(Lesson::class)->find($idLesson);
@@ -46,6 +48,7 @@ final class LessonController extends AbstractController
     }
 
     #[Route('/lesson/{idLesson}/edit', name: 'lesson_edit')]
+    #[IsGranted('ROLE_SUPER_ADMIN')]
     public function edit(int $idLesson, EntityManagerInterface $entityManager, Request $request, ValidatorInterface $validator): Response
     {
         $lesson = $entityManager->getRepository(Lesson::class)->find($idLesson);

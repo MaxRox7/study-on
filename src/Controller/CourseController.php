@@ -69,6 +69,7 @@ final class CourseController extends AbstractController
     }
 
     #[Route('/course/create', name: 'course_create')]
+    #[IsGranted('ROLE_SUPER_ADMIN')]
     public function create_course(Request $request, EntityManagerInterface $entityManager, ValidatorInterface $validator): Response
     {
         if ($request->isMethod('POST')) {
@@ -108,6 +109,7 @@ final class CourseController extends AbstractController
     }
 
     #[Route('/courses/{idCourse}/delete', name: 'course_delete')]
+    #[IsGranted('ROLE_SUPER_ADMIN')]
     public function delete_course(int $idCourse, EntityManagerInterface $entityManager): Response
     {
         // Ищем курс по его ID
@@ -127,6 +129,7 @@ final class CourseController extends AbstractController
     }
 
     #[Route('/courses/{idCourse}/edit', name: 'course_edit')]
+    #[IsGranted('ROLE_SUPER_ADMIN')]
     public function edit(int $idCourse, EntityManagerInterface $entityManager, Request $request, EntityManagerInterface $em): Response
     {
         $course = $em->getRepository(Course::class)->find($idCourse);

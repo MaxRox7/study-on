@@ -42,11 +42,11 @@ security:
         - { path: ^/login, roles: PUBLIC_ACCESS }
         - { path: ^/courses$, roles: PUBLIC_ACCESS }
         - { path: ^/courses/\d+$, roles: PUBLIC_ACCESS }
-        - { path: ^/courses/new, roles: ROLE_SUPER_ADMIN }
+        - { path: ^/course/create, roles: ROLE_SUPER_ADMIN }
         - { path: ^/courses/\d+/edit, roles: ROLE_SUPER_ADMIN }
-        - { path: ^/lessons/\d+$, roles: IS_AUTHENTICATED_FULLY }
+        - { path: ^/lesson/\d+$, roles: IS_AUTHENTICATED_FULLY }
         - { path: ^/lessons/new, roles: ROLE_SUPER_ADMIN }
-        - { path: ^/lessons/\d+/edit, roles: ROLE_SUPER_ADMIN }
+        - { path: ^/lesson/\d+/edit, roles: ROLE_SUPER_ADMIN }
         # - { path: ^/admin, roles: ROLE_ADMIN }
         # - { path: ^/profile, roles: ROLE_USER }
 

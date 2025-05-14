@@ -1,5 +1,9 @@
-{# templates/course/show.html.twig #}
-<link href="{{ asset('build/app.css') }}" rel="stylesheet">
+{% extends 'base.html.twig' %}
+
+{% block stylesheets %}
+    {{ parent() }}
+    <link href="{{ asset('build/app.css') }}" rel="stylesheet">
+{% endblock %}
 
 {% block body %}
 <div class="container mt-4">
@@ -22,23 +26,26 @@
                 {% if lessons|length > 0 %}
                     <div class="list-group">
                         {% set sorted_lessons = lessons|sort((a, b) => a.orderNumber < b.orderNumber ? -1 : 1) %}
-                        
+
                         {% for lesson in sorted_lessons %}
                             <div class="list-group-item d-flex justify-content-between align-items-center">
                                 <div>
                                     <a href="{{ path('lesson_show', { idLesson: lesson.idLesson }) }}" class="text-decoration-none">
-                                        <h5 class="mb-1">{{ lesson.titleLesson }}</h5> {# Исправлено на camelCase #}
+                                        <h5 class="mb-1">{{ lesson.titleLesson }}</h5>
                                     </a>
                                 </div>
                                 <div class="d-flex align-items-center gap-3">
                                     <span class="badge bg-primary">Урок {{ loop.index }}</span>
-                                    <form method="post" 
-                                        action="{{ path('lesson_delete', { idLesson: lesson.idLesson }) }}"
-                                        onsubmit="return confirm('Удалить урок «{{ lesson.titleLesson }}»?');"> {# Исправлено #}
-                                        <input type="hidden" name="_method" value="POST">
-                                        <a href="#" class="text-danger small" onclick="this.closest('form').submit(); return false;">Удалить</a>
-                                    </form>
-                                    <a href="{{ path('lesson_edit', { idLesson: lesson.idLesson }) }}" class="btn btn-outline-secondary btn-sm ms-2">Редактировать</a>
+
+                                    {% if is_granted('ROLE_SUPER_ADMIN') %}
+                                        <form method="post" 
+                                              action="{{ path('lesson_delete', { idLesson: lesson.idLesson }) }}"
+                                              onsubmit="return confirm('Удалить урок «{{ lesson.titleLesson }}»?');">
+                                            <input type="hidden" name="_method" value="POST">
+                                            <a href="#" class="text-danger small" onclick="this.closest('form').submit(); return false;">Удалить</a>
+                                        </form>
+                                        <a href="{{ path('lesson_edit', { idLesson: lesson.idLesson }) }}" class="btn btn-outline-secondary btn-sm ms-2">Редактировать</a>
+                                    {% endif %}
                                 </div>
                             </div>
                         {% endfor %}
@@ -48,58 +55,59 @@
                 {% endif %}
             </div>
 
-            {# ИСПРАВЛЕННАЯ ФОРМА #}
-<div class="mt-5">
-    <h4 class="mb-3">Добавить новый урок</h4>
-    {{ form_start(form, {'attr': {'novalidate': 'novalidate'}}) }}
+            {% if is_granted('ROLE_SUPER_ADMIN') %}
+                <div class="mt-5">
+                    <h4 class="mb-3">Добавить новый урок</h4>
+                    {{ form_start(form, {'attr': {'novalidate': 'novalidate'}}) }}
 
-        {# Поле названия урока #}
-        <div class="mb-3">
-            {{ form_label(form.titleLesson, 'Название урока') }} {# camelCase #}
-            {{ form_widget(form.titleLesson, {
-                'attr': {
-                    'class': 'form-control' ~ (form.titleLesson.vars.errors|length ? ' is-invalid'),
-                    'placeholder': 'Введите название урока'
-                }
-            }) }}
-            <div class="invalid-feedback">
-                {{ form_errors(form.titleLesson) }} {# camelCase #}
-            </div>
-        </div>
-
-                    {# Поле содержимого #}
-                    <div class="mb-3">
-                        {{ form_label(form.content, 'Содержание урока') }}
-                        {{ form_widget(form.content, {
-                            'attr': {
-                                'class': 'form-control' ~ (form.content.vars.errors|length ? ' is-invalid'),
-                                'rows': 5,
-                                'placeholder': 'Введите содержание урока'
-                            }
-                        }) }}
-                        <div class="invalid-feedback">
-                            {{ form_errors(form.content) }}
+                        {# Поле названия урока #}
+                        <div class="mb-3">
+                            {{ form_label(form.titleLesson, 'Название урока') }}
+                            {{ form_widget(form.titleLesson, {
+                                'attr': {
+                                    'class': 'form-control' ~ (form.titleLesson.vars.errors|length ? ' is-invalid'),
+                                    'placeholder': 'Введите название урока'
+                                }
+                            }) }}
+                            <div class="invalid-feedback">
+                                {{ form_errors(form.titleLesson) }}
+                            </div>
                         </div>
-                    </div>
 
-                    {# Поле порядкового номера #}
-                    <div class="mb-3">
-                        {{ form_label(form.orderNumber, 'Порядковый номер') }}
-                        {{ form_widget(form.orderNumber, {
-                            'attr': {
-                                'class': 'form-control' ~ (form.orderNumber.vars.errors|length ? ' is-invalid'),
-                                'placeholder': 'Укажите номер урока'
-                            }
-                        }) }}
-                        <div class="invalid-feedback">
-                            {{ form_errors(form.orderNumber) }}
+                        {# Поле содержимого #}
+                        <div class="mb-3">
+                            {{ form_label(form.content, 'Содержание урока') }}
+                            {{ form_widget(form.content, {
+                                'attr': {
+                                    'class': 'form-control' ~ (form.content.vars.errors|length ? ' is-invalid'),
+                                    'rows': 5,
+                                    'placeholder': 'Введите содержание урока'
+                                }
+                            }) }}
+                            <div class="invalid-feedback">
+                                {{ form_errors(form.content) }}
+                            </div>
                         </div>
-                    </div>
 
-                    {{ form_widget(form.save, {'attr': {'class': 'btn btn-success w-100 py-2'}}) }}
+                        {# Поле порядкового номера #}
+                        <div class="mb-3">
+                            {{ form_label(form.orderNumber, 'Порядковый номер') }}
+                            {{ form_widget(form.orderNumber, {
+                                'attr': {
+                                    'class': 'form-control' ~ (form.orderNumber.vars.errors|length ? ' is-invalid'),
+                                    'placeholder': 'Укажите номер урока'
+                                }
+                            }) }}
+                            <div class="invalid-feedback">
+                                {{ form_errors(form.orderNumber) }}
+                            </div>
+                        </div>
 
-                {{ form_end(form) }}
-            </div>
+                        {{ form_widget(form.save, {'attr': {'class': 'btn btn-success w-100 py-2'}}) }}
+
+                    {{ form_end(form) }}
+                </div>
+            {% endif %}
         </div>
     </div>
 
