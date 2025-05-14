@@ -15,4 +15,6 @@ services:
         tags:
             - { name: doctrine.event_listener, event: postGenerateSchema }
             
-            
+    App\Service\BillingClient:
+        arguments:
+            $billingUrl: '%env(ADDRESS_BILLING)%'
