@@ -14,18 +14,20 @@ security:
         main:
             lazy: true
             provider: app_user_provider
-            pattern: ^/test-error
-            security: false
-            custom_authenticator: App\Security\BillAuthAuthenticator
+            custom_authenticator: App\Security\UserAuthenticator
             logout:
                 path: app_logout
+                target: course_create
                 # where to redirect after logout
                 # target: app_any_route
-
+#            form_login:
+#                default_target_path: app_profile
+#                always_use_default_target_path: true
             remember_me:
                 secret: '%kernel.secret%'
                 lifetime: 604800
                 path: /
+                signature_properties: ['apiToken']
                 always_remember_me: true
 
             # activate different ways to authenticate
@@ -37,6 +39,14 @@ security:
     # Easy way to control access for large sections of your site
     # Note: Only the *first* access control that matches will be used
     access_control:
+        - { path: ^/login, roles: PUBLIC_ACCESS }
+        - { path: ^/courses$, roles: PUBLIC_ACCESS }
+        - { path: ^/courses/\d+$, roles: PUBLIC_ACCESS }
+        - { path: ^/courses/new, roles: ROLE_SUPER_ADMIN }
+        - { path: ^/courses/\d+/edit, roles: ROLE_SUPER_ADMIN }
+        - { path: ^/lessons/\d+$, roles: IS_AUTHENTICATED_FULLY }
+        - { path: ^/lessons/new, roles: ROLE_SUPER_ADMIN }
+        - { path: ^/lessons/\d+/edit, roles: ROLE_SUPER_ADMIN }
         # - { path: ^/admin, roles: ROLE_ADMIN }
         # - { path: ^/profile, roles: ROLE_USER }
 

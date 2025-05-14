@@ -2,6 +2,7 @@
 
 namespace App\Controller;
 
+use App\Exception\BillingUnavailableException;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
@@ -18,6 +19,13 @@ class SecurityController extends AbstractController
 
         // get the login error if there is one
         $error = $authenticationUtils->getLastAuthenticationError();
+//
+//        try {
+//           $error = $authenticationUtils->getLastAuthenticationError();
+//        } catch (BillingUnavailableException $e){
+//            $error = 'Сервис временно недоступен. Попробуйте зарегистироваться позже.';
+//        }
+
         // last username entered by the user
         $lastUsername = $authenticationUtils->getLastUsername();
 

@@ -3,24 +3,48 @@
 namespace App\Security;
 
 use Symfony\Component\Security\Core\User\UserInterface;
+use Symfony\Component\Security\Core\User\PasswordAuthenticatedUserInterface;
 
-class User implements UserInterface
+class User implements UserInterface, PasswordAuthenticatedUserInterface
 {
     private $email;
-
+    private $apiToken;
+    private ?string $password = null;
     /**
      * @var list<string> The user roles
      */
     private $roles = [];
 
-    /**
-     * @var string|null The JWT token of the user
-     */
-    private $apiToken;
+    public function getPassword(): ?string
+    {
+        return $this->password;
+    }
 
+    public function setPassword(string $password): static
+    {
+        $this->password = $password;
+        return $this;
+    }
     public function getEmail(): ?string
     {
         return $this->email;
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getApiToken()
+    {
+        return $this->apiToken;
+    }
+
+    /**
+     * @param mixed $apiToken
+     */
+    public function setApiToken($apiToken): static
+    {
+        $this->apiToken = $apiToken;
+        return $this;
     }
 
     public function setEmail(string $email): static
@@ -37,8 +61,9 @@ class User implements UserInterface
      */
     public function getUserIdentifier(): string
     {
-        return (string) $this->email;
+        return (string) $this->apiToken;
     }
+
 
     /**
      * @see UserInterface
@@ -71,28 +96,5 @@ class User implements UserInterface
     {
         // If you store any temporary, sensitive data on the user, clear it here
         // $this->plainPassword = null;
-    }
-
-    /**
-     * Get the JWT token for the user.
-     *
-     * @return string|null
-     */
-    public function getApiToken(): ?string
-    {
-        return $this->apiToken;
-    }
-
-    /**
-     * Set the JWT token for the user.
-     *
-     * @param string|null $apiToken
-     * @return $this
-     */
-    public function setApiToken(?string $apiToken): static
-    {
-        $this->apiToken = $apiToken;
-
-        return $this;
     }
 }
