@@ -13,18 +13,8 @@ class SecurityController extends AbstractController
     #[Route(path: '/login', name: 'app_login')]
     public function login(AuthenticationUtils $authenticationUtils): Response
     {
-        // if ($this->getUser()) {
-        //     return $this->redirectToRoute('target_path');
-        // }
-
-        // get the login error if there is one
+    
         $error = $authenticationUtils->getLastAuthenticationError();
-//
-//        try {
-//           $error = $authenticationUtils->getLastAuthenticationError();
-//        } catch (BillingUnavailableException $e){
-//            $error = 'Сервис временно недоступен. Попробуйте зарегистироваться позже.';
-//        }
 
         // last username entered by the user
         $lastUsername = $authenticationUtils->getLastUsername();

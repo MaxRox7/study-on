@@ -18,3 +18,4 @@ services:
     App\Service\BillingClient:
         arguments:
             $billingUrl: '%env(ADDRESS_BILLING)%'
+
