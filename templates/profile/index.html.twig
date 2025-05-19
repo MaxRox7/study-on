@@ -4,6 +4,53 @@
 
 {% block body %}
 <div class="container mt-5">
+    <h1 class="mb-4">Профиль</h1>
+    <div class="mb-3">
+        <strong>Email:</strong> {{ email }}<br>
+        <strong>Роль:</strong> {{ role }}<br>
+        <strong>Баланс:</strong> {{ balance|number_format(2, '.', ' ') }} ₽
+        <a href="#transactions" class="btn btn-link btn-sm">История транзакций</a>
+    </div>
+
+    <h2 id="transactions" class="mt-5 mb-3">История транзакций</h2>
+    {% if transactions is empty %}
+        <div class="alert alert-info">Нет транзакций</div>
+    {% else %}
+        <table class="table table-bordered table-striped">
+            <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>Дата</th>
+                    <th>Тип</th>
+                    <th>Сумма</th>
+                    <th>Курс</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for t in transactions %}
+                    <tr>
+                        <td>{{ t.id }}</td>
+                        <td>{{ t.created_at|date('d.m.Y H:i') }}</td>
+                        <td>{{ t.type == 'payment' ? 'Списание' : 'Пополнение' }}</td>
+                        <td>{{ t.amount }}</td>
+                        <td>
+                            {% if t.course_code is defined %}
+                                <a href="{{ path('course_show', {'idCourse': _self.getCourseIdByCode(t.course_code)}) }}">{{ t.course_code }}</a>
+                            {% else %}-{% endif %}
+                        </td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    {% endif %}
+</div>
+
+{% macro getCourseIdByCode(code) %}
+    {# Здесь должен быть вызов из контроллера, но макрос для Twig — заглушка #}
+    {{ code }}
+{% endmacro %}
+
+<div class="container mt-5">
     <div class="card shadow-sm">
         <div class="card-header bg-primary text-white">
             <h2 class="mb-0">Профиль пользователя</h2>

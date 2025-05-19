@@ -52,6 +52,7 @@
                                 {% if is_granted('IS_AUTHENTICATED_FULLY') %}
                                     {% if c.billing and c.billing.type == 'free' %}
                                         <form method="post" action="{{ path('course_pay', {'code': c.entity.symbolCode}) }}" class="d-inline">
+                                            <input type="hidden" name="_token" value="{{ csrf_token('pay-course') }}">
                                             <button type="submit" class="btn btn-success btn-sm">Добавить</button>
                                         </form>
                                     {% elseif c.isBought %}
@@ -59,11 +60,22 @@
                                     {% elseif c.isRented %}
                                         <span class="text-success">Арендовано до {{ c.paidUntil|date('d.m.Y H:i') }}</span>
                                     {% elseif c.billing and c.billing.type != 'free' %}
-                                        <form method="post" action="{{ path('course_pay', {'code': c.entity.symbolCode}) }}" class="d-inline">
-                                            <button type="submit" class="btn btn-primary btn-sm" {% if c.canPay is not same as(true) %}onclick="alert('Недостаточно средств для оплаты курса'); return false;"{% endif %}>
-                                                {{ c.billing.type == 'rent' ? 'Арендовать' : 'Купить' }}
-                                            </button>
+                                        <form id="form-{{ c.entity.symbolCode }}" method="post" action="{{ path('course_pay', {'code': c.entity.symbolCode}) }}" class="d-inline">
+                                            <input type="hidden" name="_token" value="{{ csrf_token('pay-course') }}">
                                         </form>
+                                        <button type="button" class="btn btn-primary btn-sm" 
+                                            {% if c.canPay %}
+                                                data-bs-toggle="modal" 
+                                                data-bs-target="#confirmModal"
+                                                data-course-title="{{ c.entity.titleCourse }}"
+                                                data-course-type="{% if c.billing.type == 'rent' %}Аренда{% else %}Покупка{% endif %}"
+                                                data-course-price="{{ c.billing.price }}"
+                                                data-form-id="form-{{ c.entity.symbolCode }}"
+                                            {% else %}
+                                                onclick="alert('Недостаточно средств для оплаты курса'); return false;"
+                                            {% endif %}>
+                                            {{ c.billing.type == 'rent' ? 'Арендовать' : 'Купить' }}
+                                        </button>
                                     {% endif %}
                                 {% endif %}
                                 {% if is_granted('ROLE_SUPER_ADMIN') %}
@@ -84,10 +96,53 @@
         </div>
     {% endif %}
 
-    <div class="mt-5 text-center">
-        {% if is_granted('ROLE_SUPER_ADMIN') %}
-            <a href="{{ path('course_create') }}" class="btn btn-success px-4 py-2">+ Создать курс</a>
-        {% endif %}
+    <!-- Модальное окно подтверждения -->
+    <div class="modal fade" id="confirmModal" tabindex="-1" aria-labelledby="confirmModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="confirmModalLabel">Подтверждение операции</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    Вы уверены, что хотите <span id="operationType"></span> курс "<span id="courseTitle"></span>" за <span id="coursePrice"></span> ₽?
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Отмена</button>
+                    <button type="button" class="btn btn-primary" id="confirmButton">Подтвердить</button>
+                </div>
+            </div>
+        </div>
     </div>
+
+    {% if is_granted('ROLE_SUPER_ADMIN') %}
+        <div class="mt-5 text-center">
+            <a href="{{ path('course_create') }}" class="btn btn-success px-4 py-2">+ Создать курс</a>
+        </div>
+    {% endif %}
 </div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const confirmModal = document.getElementById('confirmModal');
+    if (confirmModal) {
+        confirmModal.addEventListener('show.bs.modal', function(event) {
+            const button = event.relatedTarget;
+            const courseTitle = button.getAttribute('data-course-title');
+            const courseType = button.getAttribute('data-course-type');
+            const coursePrice = button.getAttribute('data-course-price');
+            const formId = button.getAttribute('data-form-id');
+
+            document.getElementById('operationType').textContent = courseType.toLowerCase();
+            document.getElementById('courseTitle').textContent = courseTitle;
+            document.getElementById('coursePrice').textContent = coursePrice;
+
+            const confirmButton = document.getElementById('confirmButton');
+            confirmButton.onclick = function() {
+                document.getElementById(formId).submit();
+            };
+        });
+    }
+});
+</script>
 {% endblock %}
