@@ -19,15 +19,16 @@ class ProfileController extends AbstractController
 
         try {
             $data = $billingClient->getCurrentUser($user->getApiToken());
-        } catch (\Exception $e) {
-            $this->addFlash('danger', 'Ошибка получения данных пользователя: ' . $e->getMessage());
-            return $this->redirectToRoute('app_login');
+            $transactions = $billingClient->getTransactions($user->getApiToken());
+        } catch (\Throwable $e) {
+            return $this->render('profile/billing_unavailable.html.twig');
         }
 
         return $this->render('profile/index.html.twig', [
             'email' => $data['email'],
             'role' => in_array('ROLE_SUPER_ADMIN', $data['roles']) ? 'Администратор' : 'Пользователь',
-            'balance' => $data['balance']
+            'balance' => $data['balance'],
+            'transactions' => $transactions,
         ]);
     }
 }

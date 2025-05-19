@@ -50,7 +50,11 @@
                             </div>
                             <div class="mt-auto d-flex flex-column gap-2">
                                 {% if is_granted('IS_AUTHENTICATED_FULLY') %}
-                                    {% if c.isBought %}
+                                    {% if c.billing and c.billing.type == 'free' %}
+                                        <form method="post" action="{{ path('course_pay', {'code': c.entity.symbolCode}) }}" class="d-inline">
+                                            <button type="submit" class="btn btn-success btn-sm">Добавить</button>
+                                        </form>
+                                    {% elseif c.isBought %}
                                         <span class="text-success">Приобретено</span>
                                     {% elseif c.isRented %}
                                         <span class="text-success">Арендовано до {{ c.paidUntil|date('d.m.Y H:i') }}</span>

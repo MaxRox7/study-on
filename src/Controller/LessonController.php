@@ -26,6 +26,14 @@ final class LessonController extends AbstractController
         }
 
         $course = $lesson->getCourse();
+        // Если курс бесплатный (type=3), доступен всем
+        if (method_exists($course, 'getType') && $course->getType() === 3) {
+            return $this->render('lesson/show.html.twig', [
+                'lesson' => $lesson,
+                'course' => $lesson->getCourse(),
+            ]);
+        }
+
         $user = $this->getUser();
         if ($user) {
             try {
