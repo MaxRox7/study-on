@@ -9,30 +9,64 @@
 <div class="container py-5">
     <h1 class="mb-4 text-center">Все курсы</h1>
 
-    {% if course is empty %}
+    {% if balance is not null and is_granted('IS_AUTHENTICATED_FULLY') %}
+        <div class="alert alert-info text-center mb-4">
+            Ваш баланс: <strong>{{ balance|number_format(2, '.', ' ') }} ₽</strong>
+        </div>
+    {% endif %}
+
+    {% if viewCourses is empty %}
         <div class="alert alert-info text-center">
             Курсы не найдены.
         </div>
     {% else %}
         <div class="row g-4">
-            {% for c in course %}
+            {% for c in viewCourses %}
                 <div class="col-md-6 col-lg-4">
                     <div class="card shadow-sm h-100 border-0 rounded-4">
                         <div class="card-body d-flex flex-column">
                             <h5 class="card-title mb-3">
-                                <a href="{{ path('course_show', {'idCourse': c.idCourse}) }}" class="text-decoration-none text-dark">
-                                    {{ c.titleCourse }}
+                                <a href="{{ path('course_show', {'idCourse': c.entity.idCourse}) }}" class="text-decoration-none text-dark">
+                                    {{ c.entity.titleCourse }}
                                 </a>
                             </h5>
                             <p class="card-text mb-4">
-                                <strong>Описание:</strong> {{ c.description ? c.description : 'Нет описания' }}
+                                <strong>Описание:</strong> {{ c.entity.description ? c.entity.description : 'Нет описания' }}
                             </p>
-                            <div class="mt-auto d-flex justify-content-between">
+                            <div class="mb-2">
+                                {% if c.billing %}
+                                    {% if c.billing.type == 'free' %}
+                                        <span class="badge bg-success">Бесплатно</span>
+                                    {% elseif c.billing.type == 'buy' %}
+                                        <span class="badge bg-info">
+                                            Покупка: {{ c.billing.price is defined ? (c.billing.price ~ ' ₽') : '—' }}
+                                        </span>
+                                    {% else %}
+                                        <span class="badge bg-info">Аренда{% if c.billing.price is defined %}: {{ c.billing.price }} ₽{% endif %}</span>
+                                    {% endif %}
+                                {% else %}
+                                    <span class="badge bg-secondary">Бесплатно</span>
+                                {% endif %}
+                            </div>
+                            <div class="mt-auto d-flex flex-column gap-2">
+                                {% if is_granted('IS_AUTHENTICATED_FULLY') %}
+                                    {% if c.isBought %}
+                                        <span class="text-success">Приобретено</span>
+                                    {% elseif c.isRented %}
+                                        <span class="text-success">Арендовано до {{ c.paidUntil|date('d.m.Y H:i') }}</span>
+                                    {% elseif c.billing and c.billing.type != 'free' %}
+                                        <form method="post" action="{{ path('course_pay', {'code': c.entity.symbolCode}) }}" class="d-inline">
+                                            <button type="submit" class="btn btn-primary btn-sm" {% if c.canPay is not same as(true) %}onclick="alert('Недостаточно средств для оплаты курса'); return false;"{% endif %}>
+                                                {{ c.billing.type == 'rent' ? 'Арендовать' : 'Купить' }}
+                                            </button>
+                                        </form>
+                                    {% endif %}
+                                {% endif %}
                                 {% if is_granted('ROLE_SUPER_ADMIN') %}
-                                    <a href="{{ path('course_edit', { idCourse: c.idCourse }) }}" class="btn btn-outline-primary btn-sm">
+                                    <a href="{{ path('course_edit', { idCourse: c.entity.idCourse }) }}" class="btn btn-outline-primary btn-sm">
                                         Редактировать
                                     </a>
-                                    <a href="{{ path('course_delete', {'idCourse': c.idCourse}) }}"
+                                    <a href="{{ path('course_delete', {'idCourse': c.entity.idCourse}) }}"
                                        class="btn btn-outline-danger btn-sm delete-button"
                                        onclick="return confirm('Вы уверены, что хотите удалить этот курс?')">
                                         Удалить

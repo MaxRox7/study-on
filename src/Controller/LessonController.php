@@ -10,17 +10,39 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
 use Symfony\Component\Validator\Validator\ValidatorInterface;
+use App\Service\BillingClient;
+use Symfony\Component\Security\Core\Exception\AccessDeniedException;
 
 final class LessonController extends AbstractController
 {
     #[Route('/lesson/{idLesson}', name: 'lesson_show')]
     #[IsGranted('ROLE_USER')]
-    public function show(EntityManagerInterface $entityManager, int $idLesson): Response
+    public function show(EntityManagerInterface $entityManager, int $idLesson, BillingClient $billingClient): Response
     {
         $lesson = $entityManager->getRepository(Lesson::class)->find($idLesson);
 
         if (!$lesson) {
             throw $this->createNotFoundException('Курс не найден');
+        }
+
+        $course = $lesson->getCourse();
+        $user = $this->getUser();
+        if ($user) {
+            try {
+                $transactions = $billingClient->getTransactions($user->getApiToken(), ['type' => 'payment', 'course_code' => $course->getSymbolCode()]);
+                $hasAccess = false;
+                foreach ($transactions as $tr) {
+                    if ($tr['type'] === 'payment' && (!isset($tr['expires_at']) || (isset($tr['expires_at']) && $tr['expires_at'] > (new \DateTimeImmutable())->format(DATE_ATOM)))) {
+                        $hasAccess = true;
+                        break;
+                    }
+                }
+                if (!$hasAccess) {
+                    throw new AccessDeniedException('Курс не оплачен или аренда истекла');
+                }
+            } catch (\Throwable $e) {
+                throw new AccessDeniedException('Ошибка проверки доступа к курсу');
+            }
         }
 
         return $this->render('lesson/show.html.twig', [

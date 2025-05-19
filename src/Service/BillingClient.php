@@ -115,4 +115,48 @@ class BillingClient
             token: $token
         );
     }
+
+    /**
+     * Получение списка курсов из billing
+     */
+    public function getCourses(): array
+    {
+        return $this->request(
+            method: 'GET',
+            url: '/api/v1/courses'
+        );
+    }
+
+    /**
+     * Получение истории транзакций пользователя
+     */
+    public function getTransactions(string $token, array $filters = []): array
+    {
+        $query = http_build_query(['filter' => $filters]);
+        $url = '/api/v1/transactions' . ($query ? ('?' . $query) : '');
+        return $this->request(
+            url: $url,
+            token: $token
+        );
+    }
+
+    /**
+     * Проверяет, покупал ли пользователь курс (или аренда не истекла)
+     * Возвращает массив: ['paid' => bool, 'expires_at' => ?string]
+     */
+    public function hasUserPaidCourse(string $token, string $courseCode): array
+    {
+        $transactions = $this->getTransactions($token, ['type' => 'payment', 'course_code' => $courseCode]);
+        foreach ($transactions as $tr) {
+            if ($tr['type'] === 'payment') {
+                if (empty($tr['expires_at'])) {
+                    return ['paid' => true, 'expires_at' => null]; // Куплен навсегда
+                }
+                if (isset($tr['expires_at']) && $tr['expires_at'] > (new \DateTimeImmutable())->format(DATE_ATOM)) {
+                    return ['paid' => true, 'expires_at' => $tr['expires_at']]; // Аренда активна
+                }
+            }
+        }
+        return ['paid' => false, 'expires_at' => null];
+    }
 }

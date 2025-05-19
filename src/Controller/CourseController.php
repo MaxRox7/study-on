@@ -15,6 +15,8 @@ use Symfony\Component\Routing\Attribute\Route;
 use Symfony\Component\Validator\Constraints\Length;
 use Symfony\Component\Validator\Constraints\NotBlank;
 use Symfony\Component\Validator\Validator\ValidatorInterface;
+use App\Service\BillingClient;
+use Symfony\Component\Security\Core\Authentication\Token\Storage\TokenStorageInterface;
 
 final class CourseController extends AbstractController
 {
@@ -55,16 +57,82 @@ final class CourseController extends AbstractController
     }
 
     #[Route('/courses', name: 'course_show_all')]
-    public function show_all(EntityManagerInterface $entityManager): Response
+    public function show_all(EntityManagerInterface $entityManager, BillingClient $billingClient, TokenStorageInterface $tokenStorage): Response
     {
-        $course = $entityManager->getRepository(Course::class)->findAll();
-
-        if (!$course) {
-            throw $this->createNotFoundException('Курсы не найден');
+        $courses = $entityManager->getRepository(Course::class)->findAll();
+        $user = $this->getUser();
+        $token = $user ? $user->getApiToken() : null;
+        $balance = null;
+        if ($user && $token) {
+            try {
+                $userData = $billingClient->getCurrentUser($token);
+                $balance = $userData['balance'] ?? null;
+            } catch (\Throwable $e) {
+                $balance = null;
+            }
         }
-
+        try {
+            $billingCourses = $billingClient->getCourses();
+            $userCourses = $token ? $billingClient->getTransactions($token, ['type' => 'payment']) : [];
+        } catch (\Throwable $e) {
+            return $this->render('course/billing_unavailable.html.twig');
+        }
+        $billingByCode = [];
+        foreach ($billingCourses as $bCourse) {
+            $billingByCode[$bCourse['code']] = $bCourse;
+        }
+        $userPaid = [];
+        foreach ($userCourses as $tr) {
+            if (!empty($tr['course_code'])) {
+                $userPaid[$tr['course_code']] = [
+                    'expires_at' => $tr['expires_at'] ?? null
+                ];
+            }
+        }
+        $viewCourses = [];
+        foreach ($courses as $course) {
+            $code = $course->getSymbolCode();
+            $billing = $billingByCode[$code] ?? null;
+            $isBought = false;
+            $isRented = false;
+            $paidUntil = null;
+            if ($user && $token && $billing && $billing['type'] !== 'free') {
+                try {
+                    $transactions = $billingClient->getTransactions($token, ['type' => 'payment', 'course_code' => $code]);
+                    foreach ($transactions as $tr) {
+                        if ($tr['type'] === 'payment') {
+                            if (empty($tr['expires_at'])) {
+                                $isBought = true;
+                                break;
+                            }
+                            if (isset($tr['expires_at']) && $tr['expires_at']) {
+                                if ($tr['expires_at'] > (new \DateTimeImmutable())->format(DATE_ATOM)) {
+                                    $isRented = true;
+                                }
+                                $paidUntil = $tr['expires_at'];
+                                break;
+                            }
+                        }
+                    }
+                } catch (\Throwable $e) {
+                }
+            }
+            $canPay = null;
+            if ($billing && $balance !== null && $billing['type'] != 'free' && isset($billing['price'])) {
+                $canPay = $balance >= $billing['price'];
+            }
+            $viewCourses[] = [
+                'entity' => $course,
+                'billing' => $billing,
+                'canPay' => $canPay,
+                'isBought' => $isBought,
+                'isRented' => $isRented,
+                'paidUntil' => $paidUntil,
+            ];
+        }
         return $this->render('course/show_all.html.twig', [
-            'course' => $course,
+            'viewCourses' => $viewCourses,
+            'balance' => $balance,
         ]);
     }
 
