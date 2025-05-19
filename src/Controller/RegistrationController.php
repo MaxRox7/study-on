@@ -69,7 +69,8 @@ class RegistrationController extends AbstractController
                 $user = new User();
                 $user->setEmail($userData['email'])
                      ->setRoles($userData['roles'])
-                     ->setApiToken($authResponse['token']);
+                     ->setApiToken($authResponse['token'])
+                     ->setRefreshToken($authResponse['refresh_token'] ?? null);
 
                 // Аутентифицируем пользователя
                 return $userAuthenticator->authenticateUser(

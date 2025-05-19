@@ -4,8 +4,9 @@ namespace App\Security;
 
 use Symfony\Component\Security\Core\User\UserInterface;
 use Symfony\Component\Security\Core\User\PasswordAuthenticatedUserInterface;
+use Symfony\Component\Security\Core\User\EquatableInterface;
 
-class User implements UserInterface, PasswordAuthenticatedUserInterface
+class User implements UserInterface, PasswordAuthenticatedUserInterface, EquatableInterface
 {
     private $email;
     private $apiToken;
@@ -14,6 +15,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
      * @var list<string> The user roles
      */
     private $roles = [];
+    private ?string $refreshToken = null;
 
     public function getPassword(): ?string
     {
@@ -96,5 +98,25 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     {
         // If you store any temporary, sensitive data on the user, clear it here
         // $this->plainPassword = null;
+    }
+
+    public function getRefreshToken(): ?string
+    {
+        return $this->refreshToken;
+    }
+
+    public function setRefreshToken(?string $refreshToken): static
+    {
+        $this->refreshToken = $refreshToken;
+        return $this;
+    }
+
+    public function isEqualTo(UserInterface $user): bool
+    {
+        // Сравниваем только email (или другой уникальный идентификатор)
+        if (!$user instanceof self) {
+            return false;
+        }
+        return $this->getEmail() === $user->getEmail();
     }
 }

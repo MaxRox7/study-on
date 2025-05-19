@@ -68,16 +68,18 @@ class UserAuthenticator extends AbstractLoginFormAuthenticator
             }
     
             $token = $authResponse['token'];
+            $refreshToken = $authResponse['refresh_token'] ?? null;
     
             // Лямбда-функция для получения пользователя
-            $loadUser = function (string $userIdentifier) use ($token): User {
+            $loadUser = function (string $userIdentifier) use ($token, $refreshToken): User {
                 $userData = $this->billingClient->getCurrentUser($token);
                 $this->logger->info('User data: ' . json_encode($userData));
     
                 $user = new User();
                 $user->setEmail($userData['email'])
                     ->setRoles($userData['roles'])
-                    ->setApiToken($token);
+                    ->setApiToken($token)
+                    ->setRefreshToken($refreshToken);
     
                 return $user;
             };
