@@ -7,9 +7,17 @@ use App\Entity\Course;
 use App\Entity\Lesson;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
+use App\Tests\Mock\BillingClientMock;
+use App\Service\BillingClient;
 
 class LessonControllerTest extends WebTestCase
 {
+    protected function setUp(): void
+    {
+        parent::setUp();
+        static::getContainer()->set(BillingClient::class, new BillingClientMock());
+    }
+
     protected function getFixtures(): array
     {
         return [AppFixtures::class];

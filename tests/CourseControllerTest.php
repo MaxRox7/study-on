@@ -20,6 +20,7 @@ class CourseControllerTest extends WebTestCase
     public function testAllCoursesWithMockBillingClient(): void
     {
         $client = static::createClient();
+        $client->disableReboot();
     
         $billingClientMock = new BillingClientMock();
     
@@ -45,6 +46,7 @@ class CourseControllerTest extends WebTestCase
     public function testLoginAndCourseListWithMockBillingClient(): void
     {
         $client = static::createClient();
+        $client->disableReboot();
 
         // Подменяем BillingClient МОКом
         static::getContainer()->set(BillingClient::class, new BillingClientMock());
@@ -65,10 +67,10 @@ class CourseControllerTest extends WebTestCase
 
         // Переходим по редиректу
         $client->followRedirect();
-
+        echo $client->getResponse()->getContent(); // Добавьте это для отладки
         // Проверка страницы курсов
         $this->assertResponseIsSuccessful();
-        $this->assertSelectorTextContains('h1', 'Все Курсы');
+        $this->assertSelectorTextContains('h1', 'Все курсы');
     }
 
     // public function testCourseCreationForm(): void

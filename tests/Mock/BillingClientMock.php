@@ -79,25 +79,44 @@ class BillingClientMock extends BillingClient
         
         switch ($url) {
             case '/api/v1/auth':
-                if (isset($data['username'], $data['password']) &&
+                if (isset($data['email'], $data['password']) &&
                     (
-                        ($data['username'] === $this->user['email'] && $data['password'] === $this->user['password']) ||
-                        ($data['username'] === $this->admin['email'] && $data['password'] === $this->admin['password'])
+                        ($data['email'] === $this->user['email'] && $data['password'] === $this->user['password']) ||
+                        ($data['email'] === $this->admin['email'] && $data['password'] === $this->admin['password'])
                     )
                 ) {
+                    $user = $data['email'] === $this->user['email'] ? $this->user : $this->admin;
                     return [
-                        'token' => base64_encode($data['username'] . ':' . $data['password']),
+                        'token' => $this->getMockJwt($user),
+                        'refresh_token' => 'mock_refresh_token',
                     ];
                 }
                 throw new InvalidCredentialsException('Неверные учетные данные');
     
             case '/api/v1/register':
                 // Предположим, что регистрация всегда успешна
+                $user = [
+                    'email' => $data['email'],
+                    'roles' => ['ROLE_USER'],
+                ];
                 return [
-                    'token' => base64_encode($data['email'] . ':' . $data['password']),
+                    'token' => $this->getMockJwt($user),
                 ];
     
             case '/api/v1/users/current':
+                // Accept both base64 and JWT tokens for compatibility
+                $jwtParts = explode('.', $token);
+                if (count($jwtParts) === 3) {
+                    $payload = json_decode(base64_decode($jwtParts[1]), true);
+                    if ($payload && isset($payload['email'])) {
+                        if ($payload['email'] === $this->user['email']) {
+                            return $this->user;
+                        }
+                        if ($payload['email'] === $this->admin['email']) {
+                            return $this->admin;
+                        }
+                    }
+                }
                 if ($token === base64_encode($this->user['email'] . ':' . $this->user['password'])) {
                     return $this->user;
                 }
@@ -127,5 +146,17 @@ class BillingClientMock extends BillingClient
             default:
                 return ['message' => 'Mocked default response'];
         }
+    }
+
+    private function getMockJwt(array $user): string
+    {
+        $header = base64_encode(json_encode(['alg' => 'HS256', 'typ' => 'JWT']));
+        $payload = base64_encode(json_encode([
+            'email' => $user['email'],
+            'roles' => $user['roles'],
+            'exp' => time() + 3600,
+        ]));
+        $signature = 'mocked_signature';
+        return $header . '.' . $payload . '.' . $signature;
     }
 }
