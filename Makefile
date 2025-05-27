@@ -22,10 +22,10 @@ fixtload:
 	@${CONSOLE} doctrine:fixtures:load
 
 encore_dev:
-	@${COMPOSE} run node yarn encore dev
+	@yarn encore dev
 
 encore_prod:
-	@${COMPOSE} run node yarn encore production
+	@ yarn encore production
 
 phpunit:
 	@${PHP} bin/phpunit

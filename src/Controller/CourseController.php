@@ -75,6 +75,7 @@ final class CourseController extends AbstractController
             $billingCourses = $billingClient->getCourses();
             $userCourses = $token ? $billingClient->getTransactions($token, ['type' => 'payment']) : [];
         } catch (\Throwable $e) {
+            dd($e); // или логгирование
             return $this->render('course/billing_unavailable.html.twig');
         }
         $billingByCode = [];

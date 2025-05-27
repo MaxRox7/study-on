@@ -53,7 +53,7 @@
                                     {% if c.billing and c.billing.type == 'free' %}
                                         <form method="post" action="{{ path('course_pay', {'code': c.entity.symbolCode}) }}" class="d-inline">
                                             <input type="hidden" name="_token" value="{{ csrf_token('pay-course') }}">
-                                            <button type="submit" class="btn btn-success btn-sm">Добавить</button>
+                                            
                                         </form>
                                     {% elseif c.isBought %}
                                         <span class="text-success">Приобретено</span>
