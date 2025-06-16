@@ -19,7 +19,7 @@ services:
         arguments:
             $billingUrl: '%env(ADDRESS_BILLING)%'
 
-    App\EventListener\UpdateUserSessionListener:
-        tags:
-            - { name: kernel.event_listener, event: kernel.response }
+    # App\EventListener\UpdateUserSessionListener:
+    #     tags:
+    #         - { name: kernel.event_listener, event: kernel.response }
 

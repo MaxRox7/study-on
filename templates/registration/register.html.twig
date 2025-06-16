@@ -2,6 +2,11 @@
 
 {% block title %}Регистрация{% endblock %}
 
+{% block javascripts %}
+    {{ parent() }}
+    <script src="{{ asset('js/registration.js') }}"></script>
+{% endblock %}
+
 {% block body %}
     <div class="container mt-5">
         <h1 class="text-center mb-4">Регистрация</h1>
@@ -52,18 +57,4 @@
             </div>
         </div>
     </div>
-
-    <script>
-        document.getElementById('registrationForm').addEventListener('submit', function(event) {
-            var password = document.getElementById('password').value;
-            var confirmPassword = document.getElementById('confirm_password').value;
-
-            if (password !== confirmPassword) {
-                event.preventDefault();  // Останавливаем отправку формы
-                document.getElementById('passwordError').style.display = 'block'; // Показываем сообщение об ошибке
-            } else {
-                document.getElementById('passwordError').style.display = 'none'; // Скрываем сообщение об ошибке
-            }
-        });
-    </script>
 {% endblock %}

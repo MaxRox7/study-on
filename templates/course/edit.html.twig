@@ -3,6 +3,7 @@
 {% block stylesheets %}
     {{ parent() }}
     <link href="{{ asset('build/app.css') }}" rel="stylesheet">
+    <link href="{{ asset('css/course-forms.css') }}" rel="stylesheet">
 {% endblock %}
 
 {% block title %}Редактировать курс - {{ course.titleCourse }}{% endblock %}
@@ -77,26 +78,4 @@
         </div>
     </div>
 </div>
-
-<style>
-    .card {
-        border-radius: 15px;
-        border: none;
-    }
-    .card-header {
-        border-radius: 15px 15px 0 0 !important;
-    }
-    .form-control.is-invalid {
-        border-width: 2px;
-        background-image: none;
-        padding-right: 0.75rem;
-    }
-    .invalid-feedback {
-        font-size: 0.9rem;
-        display: block;
-    }
-    .btn-outline-secondary:hover {
-        background-color: #f8f9fa;
-    }
-</style>
 {% endblock %}

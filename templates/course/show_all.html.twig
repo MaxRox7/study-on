@@ -3,6 +3,12 @@
 {% block stylesheets %}
     {{ parent() }}
     <link href="{{ asset('build/app.css') }}" rel="stylesheet">
+    <link href="{{ asset('css/course-show-all.css') }}" rel="stylesheet">
+{% endblock %}
+
+{% block javascripts %}
+    {{ parent() }}
+    <script src="{{ asset('js/course-modal.js') }}"></script>
 {% endblock %}
 
 {% block body %}
@@ -10,8 +16,18 @@
     <h1 class="mb-4 text-center">Все курсы</h1>
 
     {% if balance is not null and is_granted('IS_AUTHENTICATED_FULLY') %}
-        <div class="alert alert-info text-center mb-4">
-            Ваш баланс: <strong>{{ balance|number_format(2, '.', ' ') }} ₽</strong>
+        <div class="balance-card text-center" id="balanceAlert" data-balance="{{ balance }}">
+            <div class="row align-items-center">
+                <div class="col-md-6">
+                    <i class="bi bi-wallet2 me-2" style="font-size: 1.5rem;"></i>
+                    <span style="font-size: 1.1rem; opacity: 0.9;">Ваш баланс:</span>
+                </div>
+                <div class="col-md-6">
+                    <h3 class="mb-0" style="font-weight: 700;">
+                        {{ balance|number_format(2, '.', ' ') }} ₽
+                    </h3>
+                </div>
+            </div>
         </div>
     {% endif %}
 
@@ -53,7 +69,7 @@
                                     {% if c.billing and c.billing.type == 'free' %}
                                         <form method="post" action="{{ path('course_pay', {'code': c.entity.symbolCode}) }}" class="d-inline">
                                             <input type="hidden" name="_token" value="{{ csrf_token('pay-course') }}">
-                                            
+                                            <button type="submit" class="btn btn-success btn-sm">Добавить</button>
                                         </form>
                                     {% elseif c.isBought %}
                                         <span class="text-success">Приобретено</span>
@@ -122,27 +138,5 @@
     {% endif %}
 </div>
 
-<script>
-document.addEventListener('DOMContentLoaded', function() {
-    const confirmModal = document.getElementById('confirmModal');
-    if (confirmModal) {
-        confirmModal.addEventListener('show.bs.modal', function(event) {
-            const button = event.relatedTarget;
-            const courseTitle = button.getAttribute('data-course-title');
-            const courseType = button.getAttribute('data-course-type');
-            const coursePrice = button.getAttribute('data-course-price');
-            const formId = button.getAttribute('data-form-id');
 
-            document.getElementById('operationType').textContent = courseType.toLowerCase();
-            document.getElementById('courseTitle').textContent = courseTitle;
-            document.getElementById('coursePrice').textContent = coursePrice;
-
-            const confirmButton = document.getElementById('confirmButton');
-            confirmButton.onclick = function() {
-                document.getElementById(formId).submit();
-            };
-        });
-    }
-});
-</script>
 {% endblock %}

@@ -1,0 +1,154 @@
+/* Стили для страницы всех курсов */
+.page-header {
+    background: #667eea;
+    color: white;
+    padding: 3rem 0;
+    margin-bottom: 2rem;
+    border-radius: 0 0 20px 20px;
+}
+
+.balance-card {
+    background: #11998e;
+    color: white;
+    border-radius: 15px;
+    padding: 1.5rem;
+    box-shadow: 0 8px 25px rgba(0,0,0,0.1);
+    margin-bottom: 2rem;
+}
+
+.course-card {
+    transition: all 0.3s ease;
+    border: none;
+    border-radius: 20px;
+    overflow: hidden;
+    background: white;
+    box-shadow: 0 5px 15px rgba(0,0,0,0.08);
+}
+
+.course-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 15px 35px rgba(0,0,0,0.15);
+}
+
+.course-card .card-body {
+    padding: 2rem;
+}
+
+.course-title {
+    color: #2d3748;
+    font-weight: 600;
+    font-size: 1.25rem;
+    margin-bottom: 1rem;
+    text-decoration: none;
+}
+
+.course-title:hover {
+    color: #667eea;
+    text-decoration: none;
+}
+
+.course-description {
+    color: #718096;
+    font-size: 0.95rem;
+    line-height: 1.6;
+}
+
+.price-badge {
+    font-size: 0.85rem;
+    padding: 0.5rem 1rem;
+    border-radius: 20px;
+    font-weight: 500;
+}
+
+.btn-action {
+    border-radius: 25px;
+    padding: 0.6rem 1.5rem;
+    font-weight: 500;
+    transition: all 0.3s ease;
+    border: none;
+}
+
+.btn-purchase {
+    background: #667eea;
+    color: white;
+}
+
+.btn-purchase:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 5px 15px rgba(102, 126, 234, 0.3);
+}
+
+.btn-rent {
+    background: #f093fb;
+    color: white;
+}
+
+.btn-rent:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 5px 15px rgba(245, 87, 108, 0.3);
+}
+
+.btn-add {
+    background: #11998e;
+    color: white;
+}
+
+.btn-add:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 5px 15px rgba(56, 239, 125, 0.3);
+}
+
+.status-badge {
+    background: linear-gradient(135deg, #11998e 0%, #38ef7d 100%);
+    color: white;
+    padding: 0.5rem 1rem;
+    border-radius: 20px;
+    font-size: 0.85rem;
+    font-weight: 500;
+}
+
+.admin-section {
+    background: linear-gradient(135deg, #ffecd2 0%, #fcb69f 100%);
+    padding: 2rem;
+    border-radius: 20px;
+    margin-top: 3rem;
+}
+
+.create-btn {
+    background: linear-gradient(135deg, #ff9a9e 0%, #fecfef 100%);
+    border: none;
+    border-radius: 25px;
+    padding: 1rem 2rem;
+    font-weight: 600;
+    color: #2d3748;
+    transition: all 0.3s ease;
+}
+
+.create-btn:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 10px 25px rgba(255, 154, 158, 0.3);
+    color: #2d3748;
+}
+
+.modal-content {
+    border-radius: 20px;
+    border: none;
+}
+
+.modal-header {
+    background: #667eea;    
+    color: white;
+    border-radius: 20px 20px 0 0;
+}
+
+.empty-state {
+    text-align: center;
+    padding: 3rem;
+    color: #718096;
+}
+
+.empty-state i {
+    font-size: 4rem;
+    color: #e2e8f0;
+    margin-bottom: 1rem;
+} 
