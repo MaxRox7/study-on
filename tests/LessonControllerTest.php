@@ -12,11 +12,7 @@ use App\Service\BillingClient;
 
 class LessonControllerTest extends WebTestCase
 {
-    protected function setUp(): void
-    {
-        parent::setUp();
-        static::getContainer()->set(BillingClient::class, new BillingClientMock());
-    }
+
 
     protected function getFixtures(): array
     {
@@ -26,8 +22,27 @@ class LessonControllerTest extends WebTestCase
     public function testAllLesons(): void
     {
         $client = static::createClient();
+        $client->disableReboot();
+
+        // Подменяем BillingClient МОКом
+        static::getContainer()->set(BillingClient::class, new BillingClientMock());
+
+        // Получаем EntityManager из контейнера
         $container = static::getContainer();
         $entityManager = $container->get(EntityManagerInterface::class);
+
+        // Авторизация как администратор
+        $crawler = $client->request('GET', '/login');
+        $submitBtn = $crawler->selectButton('Войти');
+        $data = $submitBtn->form([
+            'email' => 'admin@mail.ru', // Логинимся как админ
+            'password' => 'password',
+        ]);
+        $client->submit($data);
+
+        // Переход на страницу курсов
+        $crawler = $client->request('GET', '/courses');
+        $this->assertResponseIsSuccessful();
 
         // Получаем курс, у которого есть уроки
         $courseWithLessons = $entityManager->getRepository(Course::class)
@@ -56,8 +71,27 @@ class LessonControllerTest extends WebTestCase
     public function testCreateLesson(): void
     {
         $client = static::createClient();
+        $client->disableReboot();
+
+        // Подменяем BillingClient МОКом
+        static::getContainer()->set(BillingClient::class, new BillingClientMock());
+
+        // Получаем EntityManager из контейнера
         $container = static::getContainer();
-        $entityManager = $container->get('doctrine')->getManager();
+        $entityManager = $container->get(EntityManagerInterface::class);
+
+        // Авторизация как администратор
+        $crawler = $client->request('GET', '/login');
+        $submitBtn = $crawler->selectButton('Войти');
+        $data = $submitBtn->form([
+            'email' => 'admin@mail.ru', // Логинимся как админ
+            'password' => 'password',
+        ]);
+        $client->submit($data);
+
+        // Переход на страницу курсов
+        $crawler = $client->request('GET', '/courses');
+        $this->assertResponseIsSuccessful();
 
         // Создаём курс для урока
         $course = new Course();
@@ -97,8 +131,27 @@ class LessonControllerTest extends WebTestCase
     public function testLessonValidation(): void
     {
         $client = static::createClient();
+        $client->disableReboot();
+
+        // Подменяем BillingClient МОКом
+        static::getContainer()->set(BillingClient::class, new BillingClientMock());
+
+        // Получаем EntityManager из контейнера
         $container = static::getContainer();
-        $entityManager = $container->get('doctrine')->getManager();
+        $entityManager = $container->get(EntityManagerInterface::class);
+
+        // Авторизация как администратор
+        $crawler = $client->request('GET', '/login');
+        $submitBtn = $crawler->selectButton('Войти');
+        $data = $submitBtn->form([
+            'email' => 'admin@mail.ru', // Логинимся как админ
+            'password' => 'password',
+        ]);
+        $client->submit($data);
+
+        // Переход на страницу курсов
+        $crawler = $client->request('GET', '/courses');
+        $this->assertResponseIsSuccessful();
 
         // Создаём курс для урока
         $course = new Course();
@@ -147,11 +200,30 @@ class LessonControllerTest extends WebTestCase
     public function testEditLesson(): void
     {
         $client = static::createClient();
+        $client->disableReboot();
+
+        // Подменяем BillingClient МОКом
+        static::getContainer()->set(BillingClient::class, new BillingClientMock());
+
+        // Получаем EntityManager из контейнера
         $container = static::getContainer();
-        $entityManager = $container->get('doctrine')->getManager();
+        $entityManager = $container->get(EntityManagerInterface::class);
+
+        // Авторизация как администратор
+        $crawler = $client->request('GET', '/login');
+        $submitBtn = $crawler->selectButton('Войти');
+        $data = $submitBtn->form([
+            'email' => 'admin@mail.ru', // Логинимся как админ
+            'password' => 'password',
+        ]);
+        $client->submit($data);
+
+        // Переход на страницу курсов
+        $crawler = $client->request('GET', '/courses');
+        $this->assertResponseIsSuccessful();
 
         // Отправляем запрос на страницу курса
-        $crawler = $client->request('GET', '/courses/'. 2);
+        $crawler = $client->request('GET', '/courses/'. 1);
         $this->assertResponseIsSuccessful();
 
         // Выводим HTML-код страницы для диагностики
@@ -176,20 +248,33 @@ class LessonControllerTest extends WebTestCase
         $this->assertResponseRedirects();
         $crawler = $client->followRedirect();
         $this->assertResponseIsSuccessful();
-        $this->assertRouteSame('course_show', ['idCourse' => 2]);
+        $this->assertRouteSame('course_show', ['idCourse' => 1]);
     }
 
     public function testEditLessonValidation(): void
     {
         $client = static::createClient();
+        $client->disableReboot();
+
+        // Подменяем BillingClient МОКом
+        static::getContainer()->set(BillingClient::class, new BillingClientMock());
+
+        // Получаем EntityManager из контейнера
         $container = static::getContainer();
-        $entityManager = $container->get('doctrine')->getManager();
+        $entityManager = $container->get(EntityManagerInterface::class);
+
+        // Авторизация как администратор
+        $crawler = $client->request('GET', '/login');
+        $submitBtn = $crawler->selectButton('Войти');
+        $data = $submitBtn->form([
+            'email' => 'admin@mail.ru', // Логинимся как админ
+            'password' => 'password',
+        ]);
+        $client->submit($data);
 
         // Отправляем запрос на страницу курса
-        $crawler = $client->request('GET', '/courses/'. 2);
+        $crawler = $client->request('GET', '/courses/1');
         $this->assertResponseIsSuccessful();
-
-        // Выводим HTML-код страницы для диагностики
 
         // Переход на страницу редактирования урока
         $editLink = $crawler->selectLink('Редактировать')->link();
@@ -205,34 +290,66 @@ class LessonControllerTest extends WebTestCase
         $form['form[orderNumber]'] = 1;
 
         // Отправляем форму
-
         $client->submit($form);
-        // Проверка наличия ошибки для поля symbolCode
         $this->assertResponseIsSuccessful();
-        $this->assertSelectorExists('.invalid-feedback'); // проверяем наличие блока ошибки
+        
+        // Обновляем crawler и проверяем ошибки валидации через правильные селекторы
+        $crawler = $client->getCrawler();
+        
+        // Для форм Symfony ошибки отображаются в самой форме через .invalid-feedback
+        $this->assertSelectorExists('.invalid-feedback');
 
+        // Возвращаемся на форму редактирования для следующих тестов
+        $crawler = $client->request('GET', '/courses/1');
+        $editLink = $crawler->selectLink('Редактировать')->link();
+        $crawler = $client->click($editLink);
+        
+        $form = $crawler->selectButton('Сохранить')->form();
         $form['form[titleLesson]'] = 'Title_lesson';
         $form['form[content]'] = '1';
         $form['form[orderNumber]'] = 1;
 
         $client->submit($form);
         $this->assertResponseIsSuccessful();
-        $this->assertSelectorExists('.invalid-feedback'); // проверяем наличие блока ошибки
+        $crawler = $client->getCrawler();
+        $this->assertSelectorExists('.invalid-feedback');
 
+        // Возвращаемся на форму редактирования для третьего теста
+        $crawler = $client->request('GET', '/courses/1');
+        $editLink = $crawler->selectLink('Редактировать')->link();
+        $crawler = $client->click($editLink);
+        
+        $form = $crawler->selectButton('Сохранить')->form();
         $form['form[titleLesson]'] = 'Title_lesson';
         $form['form[content]'] = 'content';
         $form['form[orderNumber]'] = 'a';
 
         $client->submit($form);
         $this->assertResponseIsSuccessful();
-        $this->assertSelectorExists('.invalid-feedback'); // проверяем наличие блока ошибки
+        $crawler = $client->getCrawler();
+        $this->assertSelectorExists('.invalid-feedback');
     }
 
     public function testDeleteCourse(): void
     {
         $client = static::createClient();
+        $client->disableReboot();
+
+        // Подменяем BillingClient МОКом
+        static::getContainer()->set(BillingClient::class, new BillingClientMock());
+
+        // Получаем EntityManager из контейнера
         $container = static::getContainer();
         $entityManager = $container->get(EntityManagerInterface::class);
+
+        // Авторизация как администратор
+        $crawler = $client->request('GET', '/login');
+        $submitBtn = $crawler->selectButton('Войти');
+        $data = $submitBtn->form([
+            'email' => 'admin@mail.ru', // Логинимся как админ
+            'password' => 'password',
+        ]);
+        $client->submit($data);
 
         // Переходим на страницу с курсами
         $crawler = $client->request('GET', '/courses');

@@ -68,7 +68,7 @@ class LessonService
         return $courseId;
     }
 
-    public function validateLesson(Lesson $lesson): array
+    public function validateLesson(Lesson $lesson)
     {
         $errors = $this->validator->validate($lesson);
         return $errors;

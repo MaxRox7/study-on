@@ -1,0 +1,354 @@
+<?php
+
+namespace App\Tests;
+
+use App\DataFixtures\AppFixtures;
+use App\Entity\Course;
+use App\Entity\Lesson;
+use Doctrine\ORM\EntityManagerInterface;
+use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
+use App\Tests\Mock\BillingClientMock;
+use App\Service\BillingClient;
+
+class SecurityTest extends WebTestCase
+{
+    protected function getFixtures(): array
+    {
+        return [AppFixtures::class];
+    }
+
+    public function testUnauthorizedUserCannotAccessLessons(): void
+    {
+        $client = static::createClient();
+        $client->disableReboot();
+
+        // Подменяем BillingClient МОКом
+        static::getContainer()->set(BillingClient::class, new BillingClientMock());
+
+        // Получаем EntityManager из контейнера
+        $container = static::getContainer();
+        $entityManager = $container->get(EntityManagerInterface::class);
+
+        // Находим любой урок
+        $lesson = $entityManager->getRepository(Lesson::class)->findOneBy([]);
+        $this->assertNotNull($lesson, 'Не найден урок для теста');
+
+        // Пытаемся получить доступ к уроку без авторизации
+        $client->request('GET', '/lesson/' . $lesson->getIdLesson());
+        
+        // Должен быть редирект на страницу логина
+        $this->assertResponseRedirects('/login');
+    }
+
+    public function testUnauthorizedUserCanAccessCoursesList(): void
+    {
+        $client = static::createClient();
+        $client->disableReboot();
+
+        // Подменяем BillingClient МОКом
+        static::getContainer()->set(BillingClient::class, new BillingClientMock());
+
+        // Неавторизованный пользователь должен иметь доступ к списку курсов
+        $crawler = $client->request('GET', '/courses');
+        $this->assertResponseIsSuccessful();
+        $this->assertSelectorExists('.card-title'); // Проверяем наличие карточек курсов
+    }
+
+    public function testUnauthorizedUserCanAccessCoursePage(): void
+    {
+        $client = static::createClient();
+        $client->disableReboot();
+
+        // Подменяем BillingClient МОКом
+        static::getContainer()->set(BillingClient::class, new BillingClientMock());
+
+        // Получаем EntityManager из контейнера
+        $container = static::getContainer();
+        $entityManager = $container->get(EntityManagerInterface::class);
+
+        // Находим любой курс
+        $course = $entityManager->getRepository(Course::class)->findOneBy([]);
+        $this->assertNotNull($course, 'Не найден курс для теста');
+
+        // Неавторизованный пользователь должен иметь доступ к странице курса
+        $crawler = $client->request('GET', '/courses/' . $course->getIdCourse());
+        $this->assertResponseIsSuccessful();
+    }
+
+    public function testRegularUserCannotAccessAdminFunctions(): void
+    {
+        $client = static::createClient();
+        $client->disableReboot();
+
+        // Подменяем BillingClient МОКом
+        static::getContainer()->set(BillingClient::class, new BillingClientMock());
+
+        // Авторизуемся как обычный пользователь
+        $crawler = $client->request('GET', '/login');
+        $submitBtn = $crawler->selectButton('Войти');
+        $data = $submitBtn->form([
+            'email' => 'user@mail.ru', // Обычный пользователь
+            'password' => '123456',
+        ]);
+        $client->submit($data);
+
+        // Переходим на страницу курсов
+        $crawler = $client->request('GET', '/courses');
+        $this->assertResponseIsSuccessful();
+
+        // Проверяем, что кнопки админских действий отсутствуют в интерфейсе
+        $this->assertSelectorNotExists('a:contains("+ Создать курс")');
+        $this->assertSelectorNotExists('a:contains("Редактировать")');
+        $this->assertSelectorNotExists('a:contains("Удалить")');
+    }
+
+    public function testRegularUserCannotAccessCreateCourseDirectly(): void
+    {
+        $client = static::createClient();
+        $client->disableReboot();
+
+        // Подменяем BillingClient МОКом
+        static::getContainer()->set(BillingClient::class, new BillingClientMock());
+
+        // Авторизуемся как обычный пользователь
+        $crawler = $client->request('GET', '/login');
+        $submitBtn = $crawler->selectButton('Войти');
+        $data = $submitBtn->form([
+            'email' => 'user@mail.ru', // Обычный пользователь
+            'password' => '123456',
+        ]);
+        $client->submit($data);
+
+        // Пытаемся получить прямой доступ к созданию курса
+        $client->request('GET', '/course/create');
+        
+        // Должен быть статус 403 (Forbidden)
+        $this->assertResponseStatusCodeSame(403);
+    }
+
+    public function testRegularUserCannotAccessEditCourseDirectly(): void
+    {
+        $client = static::createClient();
+        $client->disableReboot();
+
+        // Подменяем BillingClient МОКом
+        static::getContainer()->set(BillingClient::class, new BillingClientMock());
+
+        // Получаем EntityManager из контейнера
+        $container = static::getContainer();
+        $entityManager = $container->get(EntityManagerInterface::class);
+
+        // Находим любой курс
+        $course = $entityManager->getRepository(Course::class)->findOneBy([]);
+        $this->assertNotNull($course, 'Не найден курс для теста');
+
+        // Авторизуемся как обычный пользователь
+        $crawler = $client->request('GET', '/login');
+        $submitBtn = $crawler->selectButton('Войти');
+        $data = $submitBtn->form([
+            'email' => 'user@mail.ru', // Обычный пользователь
+            'password' => '123456',
+        ]);
+        $client->submit($data);
+
+        // Пытаемся получить прямой доступ к редактированию курса
+        $client->request('GET', '/courses/' . $course->getIdCourse() . '/edit');
+        
+        // Должен быть статус 403 (Forbidden)
+        $this->assertResponseStatusCodeSame(403);
+    }
+
+    public function testRegularUserCannotDeleteCourseDirectly(): void
+    {
+        $client = static::createClient();
+        $client->disableReboot();
+
+        // Подменяем BillingClient МОКом
+        static::getContainer()->set(BillingClient::class, new BillingClientMock());
+
+        // Получаем EntityManager из контейнера
+        $container = static::getContainer();
+        $entityManager = $container->get(EntityManagerInterface::class);
+
+        // Находим любой курс
+        $course = $entityManager->getRepository(Course::class)->findOneBy([]);
+        $this->assertNotNull($course, 'Не найден курс для теста');
+
+        // Авторизуемся как обычный пользователь
+        $crawler = $client->request('GET', '/login');
+        $submitBtn = $crawler->selectButton('Войти');
+        $data = $submitBtn->form([
+            'email' => 'user@mail.ru', // Обычный пользователь
+            'password' => '123456',
+        ]);
+        $client->submit($data);
+
+        // Пытаемся получить прямой доступ к удалению курса
+        $client->request('GET', '/courses/' . $course->getIdCourse() . '/delete');
+        
+        // Должен быть статус 403 (Forbidden)
+        $this->assertResponseStatusCodeSame(403);
+    }
+
+    public function testRegularUserCannotAccessLessonEditDirectly(): void
+    {
+        $client = static::createClient();
+        $client->disableReboot();
+
+        // Подменяем BillingClient МОКом
+        static::getContainer()->set(BillingClient::class, new BillingClientMock());
+
+        // Получаем EntityManager из контейнера
+        $container = static::getContainer();
+        $entityManager = $container->get(EntityManagerInterface::class);
+
+        // Находим любой урок
+        $lesson = $entityManager->getRepository(Lesson::class)->findOneBy([]);
+        $this->assertNotNull($lesson, 'Не найден урок для теста');
+
+        // Авторизуемся как обычный пользователь
+        $crawler = $client->request('GET', '/login');
+        $submitBtn = $crawler->selectButton('Войти');
+        $data = $submitBtn->form([
+            'email' => 'user@mail.ru', // Обычный пользователь
+            'password' => '123456',
+        ]);
+        $client->submit($data);
+
+        // Пытаемся получить прямой доступ к редактированию урока
+        $client->request('GET', '/lesson/' . $lesson->getIdLesson() . '/edit');
+        
+        // Должен быть статус 403 (Forbidden)
+        $this->assertResponseStatusCodeSame(403);
+    }
+
+    public function testRegularUserCannotDeleteLessonDirectly(): void
+    {
+        $client = static::createClient();
+        $client->disableReboot();
+
+        // Подменяем BillingClient МОКом
+        static::getContainer()->set(BillingClient::class, new BillingClientMock());
+
+        // Получаем EntityManager из контейнера
+        $container = static::getContainer();
+        $entityManager = $container->get(EntityManagerInterface::class);
+
+        // Находим любой урок
+        $lesson = $entityManager->getRepository(Lesson::class)->findOneBy([]);
+        $this->assertNotNull($lesson, 'Не найден урок для теста');
+
+        // Авторизуемся как обычный пользователь
+        $crawler = $client->request('GET', '/login');
+        $submitBtn = $crawler->selectButton('Войти');
+        $data = $submitBtn->form([
+            'email' => 'user@mail.ru', // Обычный пользователь
+            'password' => '123456',
+        ]);
+        $client->submit($data);
+
+        // Пытаемся получить прямой доступ к удалению урока
+        $client->request('POST', '/lessons/delete/' . $lesson->getIdLesson());
+        
+        // Должен быть статус 403 (Forbidden)
+        $this->assertResponseStatusCodeSame(403);
+    }
+
+    public function testAdminCanAccessAllFunctions(): void
+    {
+        $client = static::createClient();
+        $client->disableReboot();
+
+        // Подменяем BillingClient МОКом
+        static::getContainer()->set(BillingClient::class, new BillingClientMock());
+
+        // Авторизуемся как администратор
+        $crawler = $client->request('GET', '/login');
+        $submitBtn = $crawler->selectButton('Войти');
+        $data = $submitBtn->form([
+            'email' => 'admin@mail.ru', // Администратор
+            'password' => 'password',
+        ]);
+        $client->submit($data);
+
+        // Переходим на страницу курсов
+        $crawler = $client->request('GET', '/courses');
+        $this->assertResponseIsSuccessful();
+
+        // Проверяем, что кнопки админских действий присутствуют в интерфейсе
+        $this->assertSelectorExists('a:contains("+ Создать курс")');
+
+        // Проверяем доступ к созданию курса
+        $client->request('GET', '/course/create');
+        $this->assertResponseIsSuccessful();
+    }
+
+    public function testAuthorizedUserCanAccessLessons(): void
+    {
+        $client = static::createClient();
+        $client->disableReboot();
+
+        // Подменяем BillingClient МОКом
+        static::getContainer()->set(BillingClient::class, new BillingClientMock());
+
+        // Получаем EntityManager из контейнера
+        $container = static::getContainer();
+        $entityManager = $container->get(EntityManagerInterface::class);
+
+        // Находим любой урок
+        $lesson = $entityManager->getRepository(Lesson::class)->findOneBy([]);
+        $this->assertNotNull($lesson, 'Не найден урок для теста');
+
+        // Авторизуемся как обычный пользователь
+        $crawler = $client->request('GET', '/login');
+        $submitBtn = $crawler->selectButton('Войти');
+        $data = $submitBtn->form([
+            'email' => 'user@mail.ru', // Обычный пользователь
+            'password' => '123456',
+        ]);
+        $client->submit($data);
+
+        // Пытаемся получить доступ к уроку с авторизацией
+        $client->request('GET', '/lesson/' . $lesson->getIdLesson());
+        
+        // Может быть успешно (если курс бесплатный) или ошибка доступа (если курс платный)
+        // В любом случае не должно быть редиректа на логин
+        $response = $client->getResponse();
+        $this->assertTrue($response->getStatusCode() === 200 || $response->getStatusCode() === 403, 
+            'Ответ должен быть 200 (успех) или 403 (нет доступа), но не редирект на логин');
+    }
+
+    public function testRegularUserCanViewCoursePage(): void
+    {
+        $client = static::createClient();
+        $client->disableReboot();
+
+        // Подменяем BillingClient МОКом
+        static::getContainer()->set(BillingClient::class, new BillingClientMock());
+
+        // Получаем EntityManager из контейнера
+        $container = static::getContainer();
+        $entityManager = $container->get(EntityManagerInterface::class);
+
+        // Находим любой курс
+        $course = $entityManager->getRepository(Course::class)->findOneBy([]);
+        $this->assertNotNull($course, 'Не найден курс для теста');
+
+        // Авторизуемся как обычный пользователь
+        $crawler = $client->request('GET', '/login');
+        $submitBtn = $crawler->selectButton('Войти');
+        $data = $submitBtn->form([
+            'email' => 'user@mail.ru', // Обычный пользователь
+            'password' => '123456',
+        ]);
+        $client->submit($data);
+
+        // Пользователь должен иметь доступ к странице курса
+        $crawler = $client->request('GET', '/courses/' . $course->getIdCourse());
+        $this->assertResponseIsSuccessful();
+
+        // Но не должен видеть админские кнопки
+        $this->assertSelectorNotExists('a:contains("Редактировать")');
+        $this->assertSelectorNotExists('a:contains("Удалить")');
+    }
+} 

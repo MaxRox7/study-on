@@ -55,17 +55,21 @@ final class LessonController extends AbstractController
             throw $this->createNotFoundException('Урок не найден');
         }
         $form = $this->createFormBuilder($lesson)
-            ->add('titleLesson')
-            ->add('content')
-            ->add('orderNumber')
-            ->add('save', SubmitType::class, ['label' => 'Сохранить изменения'])
+            ->add('titleLesson', null, [
+                'label' => 'Название урока',
+                'required' => true,
+            ])
+            ->add('content', null, [
+                'label' => 'Содержимое урока',
+                'required' => true,
+            ])
+            ->add('orderNumber', null, [
+                'label' => 'Порядковый номер',
+                'required' => true,
+            ])
+            ->add('save', SubmitType::class, ['label' => 'Сохранить'])
             ->getForm();
         $form->handleRequest($request);
-        $errors = $this->lessonService->validateLesson($lesson);
-        if (count($errors) > 0) {
-            $errorsString = (string) $errors;
-            return new Response($errorsString);
-        }
         if ($form->isSubmitted() && $form->isValid()) {
             $this->lessonService->updateLesson();
             return $this->redirectToRoute('course_show', ['idCourse' => $lesson->getCourse()->getIdCourse()]);

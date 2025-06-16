@@ -1,7 +1,5 @@
 /* JavaScript для модального окна курсов и защиты баланса */
 document.addEventListener('DOMContentLoaded', function() {
-    console.log('DOM loaded, checking Bootstrap...');
-    
     // Проверяем, загружен ли Bootstrap
     if (typeof bootstrap === 'undefined') {
         console.error('Bootstrap is not loaded!');
@@ -10,7 +8,6 @@ document.addEventListener('DOMContentLoaded', function() {
         document.querySelectorAll('[data-bs-toggle="modal"]').forEach(function(button) {
             button.addEventListener('click', function(e) {
                 e.preventDefault();
-                console.log('Fallback modal trigger');
                 
                 const targetSelector = this.getAttribute('data-bs-target');
                 const modal = document.querySelector(targetSelector);
@@ -41,7 +38,6 @@ document.addEventListener('DOMContentLoaded', function() {
                     // Настраиваем кнопку подтверждения
                     const confirmButton = modal.querySelector('#confirmButton');
                     confirmButton.onclick = function() {
-                        console.log('Confirm clicked, submitting form:', formId);
                         document.getElementById(formId).submit();
                     };
                     
@@ -68,19 +64,14 @@ document.addEventListener('DOMContentLoaded', function() {
         return;
     }
     
-    console.log('Bootstrap loaded successfully');
-    
     // Стандартная Bootstrap реализация
     const confirmModal = document.getElementById('confirmModal');
     if (confirmModal) {
-        console.log('Modal element found');
         
         confirmModal.addEventListener('show.bs.modal', function(event) {
-            console.log('Modal show event triggered');
             const button = event.relatedTarget;
             
             if (!button) {
-                console.error('No button found in event.relatedTarget');
                 return;
             }
             
@@ -89,10 +80,7 @@ document.addEventListener('DOMContentLoaded', function() {
             const coursePrice = button.getAttribute('data-course-price');
             const formId = button.getAttribute('data-form-id');
             
-            console.log('Modal data:', {courseTitle, courseType, coursePrice, formId});
-            
             if (!courseTitle || !courseType || !coursePrice || !formId) {
-                console.error('Missing data attributes on button');
                 return;
             }
             
@@ -102,55 +90,25 @@ document.addEventListener('DOMContentLoaded', function() {
             
             const confirmButton = document.getElementById('confirmButton');
             confirmButton.onclick = function() {
-                console.log('Confirm button clicked, submitting form:', formId);
                 const form = document.getElementById(formId);
                 if (form) {
                     form.submit();
-                } else {
-                    console.error('Form not found:', formId);
                 }
             };
         });
-        
-        confirmModal.addEventListener('shown.bs.modal', function() {
-            console.log('Modal shown successfully');
-        });
-        
-        confirmModal.addEventListener('hidden.bs.modal', function() {
-            console.log('Modal hidden');
-        });
-    } else {
-        console.error('Modal element not found');
     }
-    
-    // Проверяем кнопки
-    const buyButtons = document.querySelectorAll('[data-bs-toggle="modal"]');
-    console.log('Found buy buttons:', buyButtons.length);
-    
-    buyButtons.forEach(function(btn, index) {
-        console.log('Button ' + index + ':', {
-            target: btn.getAttribute('data-bs-target'),
-            title: btn.getAttribute('data-course-title'),
-            type: btn.getAttribute('data-course-type'),
-            price: btn.getAttribute('data-course-price'),
-            formId: btn.getAttribute('data-form-id')
-        });
-    });
 });
 
 // Простая защита баланса от удаления
 (function() {
     const balanceAlert = document.getElementById('balanceAlert');
     if (balanceAlert) {
-        console.log('✅ Баланс защищен от автоудаления');
-        
         // Защита от удаления через MutationObserver
         const observer = new MutationObserver(function(mutations) {
             mutations.forEach(function(mutation) {
                 if (mutation.type === 'childList') {
                     mutation.removedNodes.forEach(function(node) {
                         if (node === balanceAlert || (node.contains && node.contains(balanceAlert))) {
-                            console.warn('⚠️ Попытка удаления баланса заблокирована');
                             // Возвращаем баланс обратно
                             mutation.target.insertBefore(balanceAlert, mutation.nextSibling);
                         }
