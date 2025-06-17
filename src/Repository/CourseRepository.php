@@ -31,13 +31,13 @@ class CourseRepository extends ServiceEntityRepository
     //        ;
     //    }
 
-    //    public function findOneBySomeField($value): ?Course
-    //    {
-    //        return $this->createQueryBuilder('c')
-    //            ->andWhere('c.exampleField = :val')
-    //            ->setParameter('val', $value)
-    //            ->getQuery()
-    //            ->getOneOrNullResult()
-    //        ;
-    //    }
+    public function findOneBySymbolCode(string $symbolCode): ?Course
+    {
+        return $this->createQueryBuilder('c')
+            ->andWhere('c.symbolCode = :code')
+            ->setParameter('code', $symbolCode)
+            ->getQuery()
+            ->getOneOrNullResult()
+        ;
+    }
 }

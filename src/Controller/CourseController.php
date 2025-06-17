@@ -4,59 +4,21 @@ namespace App\Controller;
 
 use App\Entity\Course;
 use App\Entity\Lesson;
+use App\Form\CourseType;
 use App\Service\CourseService;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
-use Symfony\Component\Form\Extension\Core\Type\SubmitType;
-use Symfony\Component\Form\Extension\Core\Type\TextareaType;
-use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
-use Symfony\Component\Routing\Attribute\Route;
+use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\Security\Http\Attribute\IsGranted;
-use Symfony\Component\Validator\Constraints\Length;
-use Symfony\Component\Validator\Constraints\NotBlank;
 
-final class CourseController extends AbstractController
+class CourseController extends AbstractController
 {
     private CourseService $courseService;
 
     public function __construct(CourseService $courseService)
     {
         $this->courseService = $courseService;
-    }
-
-    #[Route('/courses/{idCourse}', name: 'course_show')]
-    public function show(int $idCourse, Request $request): Response
-    {
-        $course = $this->courseService->getCourse($idCourse);
-
-        if (!$course) {
-            throw $this->createNotFoundException('Курс не найден');
-        }
-
-        $lesson = new Lesson();
-        $lesson->setCourse($course);
-
-        // Исправлены имена полей согласно сущности
-        $form = $this->createFormBuilder($lesson)
-            ->add('titleLesson') // camelCase для соответствия сущности
-            ->add('content')
-            ->add('orderNumber')
-            ->add('save', SubmitType::class, ['label' => 'Добавить урок'])
-            ->getForm();
-
-        $form->handleRequest($request);
-
-        if ($form->isSubmitted() && $form->isValid()) {
-            $this->courseService->createLesson($lesson);
-            return $this->redirectToRoute('course_show', ['idCourse' => $idCourse]);
-        }
-
-        return $this->render('course/show.html.twig', [
-            'course' => $course,
-            'form' => $form->createView(),
-            'lessons' => $course->getLessons(),
-        ]);
     }
 
     #[Route('/courses', name: 'course_show_all')]
@@ -78,30 +40,31 @@ final class CourseController extends AbstractController
     #[IsGranted('ROLE_SUPER_ADMIN')]
     public function create_course(Request $request): Response
     {
-        if ($request->isMethod('POST')) {
-            $symbolCode = $request->request->get('symbolCode');
-            $titleCourse = $request->request->get('title_course');
-            $description = $request->request->get('description');
+        $course = new Course();
+        $form = $this->createForm(CourseType::class, $course);
+        $form->handleRequest($request);
 
-            $result = $this->courseService->createCourse($symbolCode, $titleCourse, $description);
+        if ($form->isSubmitted() && $form->isValid()) {
+            $formData = [
+                'courseType' => $form->get('courseType')->getData(),
+                'coursePrice' => $form->get('coursePrice')->getData(),
+            ];
 
-            if (!$result['success']) {
-                // Добавляем ошибки во флеш-сообщения
+            $result = $this->courseService->handleCourseCreation($course, $formData);
+
+            if ($result['success']) {
+                $this->addFlash('success', 'Курс успешно создан');
+                return $this->redirectToRoute('course_show', ['idCourse' => $result['course']->getIdCourse()]);
+            } else {
                 foreach ($result['errors'] as $field => $message) {
-                    $this->addFlash('error_'.$field, $message);
+                    $this->addFlash('error', $message);
                 }
-
-                return $this->render('course/create.html.twig', [
-                    'symbolCode' => $symbolCode,
-                    'title_course' => $titleCourse,
-                    'description' => $description,
-                ]);
             }
-
-            return $this->redirectToRoute('course_show', ['idCourse' => $result['course']->getIdCourse()]);
         }
 
-        return $this->render('course/create.html.twig');
+        return $this->render('course/create.html.twig', [
+            'form' => $form->createView(),
+        ]);
     }
 
     #[Route('/courses/{idCourse}/delete', name: 'course_delete')]
@@ -127,41 +90,67 @@ final class CourseController extends AbstractController
             throw $this->createNotFoundException('Курс не найден');
         }
 
-        $form = $this->createFormBuilder($course)
-            ->add('titleCourse', TextType::class, [
-                'label' => 'Название курса',
-                'constraints' => [
-                    new NotBlank(['message' => 'Поле обязательно для заполнения']),
-                    new Length([
-                        'min' => 3,
-                        'max' => 255,
-                        'minMessage' => 'Название должно быть не менее {{ limit }} символов',
-                        'maxMessage' => 'Название должно быть не длиннее {{ limit }} символов',
-                    ]),
-                ],
-            ])
-            ->add('symbolCode', TextType::class, [
-                'label' => 'Код курса',
-            ])
-            ->add('description', TextareaType::class, [
-                'label' => 'Описание',
-                'required' => false,
-                'attr' => ['rows' => 8],
-            ])
-            ->getForm();
+        $form = $this->createForm(CourseType::class, $course);
+        
+        // Устанавливаем значения из биллинга для unmapped полей
+        $billingFormData = $this->courseService->prepareCourseEditForm($course);
+        if (!empty($billingFormData['courseType'])) {
+            $form->get('courseType')->setData($billingFormData['courseType']);
+        }
+        if (!empty($billingFormData['coursePrice'])) {
+            $form->get('coursePrice')->setData($billingFormData['coursePrice']);
+        }
 
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
-            $this->courseService->updateCourse($course);
-            $this->addFlash('success', 'Изменения успешно сохранены');
+            $formData = [
+                'courseType' => $form->get('courseType')->getData(),
+                'coursePrice' => $form->get('coursePrice')->getData(),
+            ];
 
-            return $this->redirectToRoute('course_show', ['idCourse' => $idCourse]);
+            $result = $this->courseService->handleCourseUpdate($course, $formData);
+
+            if ($result['success']) {
+                $this->addFlash('success', 'Изменения успешно сохранены');
+                return $this->redirectToRoute('course_show', ['idCourse' => $idCourse]);
+            } else {
+                foreach ($result['errors'] as $field => $message) {
+                    $this->addFlash('error', $message);
+                }
+            }
         }
 
         return $this->render('course/edit.html.twig', [
             'form' => $form->createView(),
             'course' => $course,
+        ]);
+    }
+
+    #[Route('/course/{idCourse}', name: 'course_show', requirements: ['idCourse' => '\d+'])]
+    public function show(int $idCourse, Request $request): Response
+    {
+        $course = $this->courseService->getCourse($idCourse);
+
+        if (!$course) {
+            throw $this->createNotFoundException('Курс не найден');
+        }
+
+        $lessonFormData = $this->courseService->createLessonForm($course);
+        $lesson = $lessonFormData['lesson'];
+        $form = $lessonFormData['form'];
+
+        $form->handleRequest($request);
+
+        if ($form->isSubmitted() && $form->isValid()) {
+            $this->courseService->handleLessonCreation($lesson);
+            return $this->redirectToRoute('course_show', ['idCourse' => $idCourse]);
+        }
+
+        return $this->render('course/show.html.twig', [
+            'course' => $course,
+            'form' => $form->createView(),
+            'lessons' => $course->getLessons(),
         ]);
     }
 }

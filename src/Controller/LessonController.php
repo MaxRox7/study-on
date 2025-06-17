@@ -2,10 +2,8 @@
 
 namespace App\Controller;
 
-use App\Entity\Lesson;
 use App\Service\LessonService;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
-use Symfony\Component\Form\Extension\Core\Type\SubmitType;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
@@ -54,24 +52,10 @@ final class LessonController extends AbstractController
         if (!$lesson) {
             throw $this->createNotFoundException('Урок не найден');
         }
-        $form = $this->createFormBuilder($lesson)
-            ->add('titleLesson', null, [
-                'label' => 'Название урока',
-                'required' => true,
-            ])
-            ->add('content', null, [
-                'label' => 'Содержимое урока',
-                'required' => true,
-            ])
-            ->add('orderNumber', null, [
-                'label' => 'Порядковый номер',
-                'required' => true,
-            ])
-            ->add('save', SubmitType::class, ['label' => 'Сохранить'])
-            ->getForm();
+        $form = $this->lessonService->createEditForm($lesson);
         $form->handleRequest($request);
         if ($form->isSubmitted() && $form->isValid()) {
-            $this->lessonService->updateLesson();
+            $this->lessonService->handleLessonUpdate($lesson);
             return $this->redirectToRoute('course_show', ['idCourse' => $lesson->getCourse()->getIdCourse()]);
         }
         return $this->render('lesson/edit.html.twig', [

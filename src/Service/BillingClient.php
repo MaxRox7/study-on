@@ -159,4 +159,30 @@ class BillingClient
         }
         return ['paid' => false, 'expires_at' => null];
     }
+
+    /**
+     * Создание курса в биллинге
+     */
+    public function createCourse(string $token, array $courseData): array
+    {
+        return $this->request(
+            method: 'POST',
+            url: '/api/v1/courses',
+            data: $courseData,
+            token: $token
+        );
+    }
+
+    /**
+     * Редактирование курса в биллинге
+     */
+    public function updateCourse(string $token, string $courseCode, array $courseData): array
+    {
+        return $this->request(
+            method: 'POST',
+            url: '/api/v1/courses/' . $courseCode,
+            data: $courseData,
+            token: $token
+        );
+    }
 }

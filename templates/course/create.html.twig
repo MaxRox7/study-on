@@ -8,62 +8,83 @@
     <link href="{{ asset('css/course-forms.css') }}" rel="stylesheet">
 {% endblock %}
 
+{% block javascripts %}
+    {{ parent() }}
+    <script src="{{ asset('js/course-forms.js') }}"></script>
+{% endblock %}
+
 {% block body %}
     <div class="container mt-5">
         <h1 class="text-center mb-4 text-primary">Создать курс</h1>
 
         <div class="card shadow-lg p-4 rounded">
-            <form method="post">
+            {{ form_start(form) }}
+                
                 <div class="mb-3">
-                    <label for="symbolCode" class="form-label">Код курса</label>
-                    <input type="text" 
-                        class="form-control {% if app.session.flashbag.has('error_symbol_code') %}is-invalid{% endif %}" 
-                        id="symbolCode" 
-                        name="symbolCode" 
-                        value="{{ symbolCode ?? '' }}"
-                        placeholder="Введите код курса">
-                    {% for message in app.session.flashbag.get('error_symbol_code') %}
-                        <div class="invalid-feedback">
-                            {{ message }}
-                        </div>
-                    {% endfor %}
+                    {{ form_label(form.titleCourse, null, {'label_attr': {'class': 'form-label'}}) }}
+                    {{ form_widget(form.titleCourse, {
+                        'attr': {
+                            'class': 'form-control' ~ (form.titleCourse.vars.valid ? '' : ' is-invalid')
+                        }
+                    }) }}
+                    {{ form_errors(form.titleCourse) }}
                 </div>
 
                 <div class="mb-3">
-                    <label for="title_course" class="form-label">Название курса</label>
-                    <input type="text" 
-                        class="form-control {% if app.session.flashbag.has('error_title_course') %}is-invalid{% endif %}" 
-                        id="title_course" 
-                        name="title_course" 
-                        value="{{ title_course ?? '' }}"
-                        placeholder="Введите название курса">
-                    {% for message in app.session.flashbag.get('error_title_course') %}
-                        <div class="invalid-feedback">
-                            {{ message }}
-                        </div>
-                    {% endfor %}
+                    {{ form_label(form.symbolCode, null, {'label_attr': {'class': 'form-label'}}) }}
+                    {{ form_widget(form.symbolCode, {
+                        'attr': {
+                            'class': 'form-control' ~ (form.symbolCode.vars.valid ? '' : ' is-invalid')
+                        }
+                    }) }}
+                    {{ form_errors(form.symbolCode) }}
                 </div>
 
                 <div class="mb-3">
-                    <label for="description" class="form-label">Описание</label>
-                    <textarea class="form-control {% if app.session.flashbag.has('error_description') %}is-invalid{% endif %}" 
-                            id="description" 
-                            name="description" 
-                            rows="4"
-                            style="height: 150px;"
-                            placeholder="Введите описание курса">{{ description ?? '' }}</textarea>
-                    {% for message in app.session.flashbag.get('error_description') %}
-                        <div class="invalid-feedback">
-                            {{ message }}
-                        </div>
-                    {% endfor %}
+                    {{ form_label(form.description, null, {'label_attr': {'class': 'form-label'}}) }}
+                    {{ form_widget(form.description, {
+                        'attr': {
+                            'class': 'form-control' ~ (form.description.vars.valid ? '' : ' is-invalid')
+                        }
+                    }) }}
+                    {{ form_errors(form.description) }}
                 </div>
+
+                <div class="mb-3">
+                    {{ form_label(form.courseType, null, {'label_attr': {'class': 'form-label'}}) }}
+                    {{ form_widget(form.courseType, {
+                        'attr': {
+                            'class': 'form-control' ~ (form.courseType.vars.valid ? '' : ' is-invalid')
+                        }
+                    }) }}
+                    {{ form_errors(form.courseType) }}
+                </div>
+
+                <div class="mb-3" id="price_field" style="display: none;">
+                    {{ form_label(form.coursePrice, null, {'label_attr': {'class': 'form-label'}}) }}
+                    {{ form_widget(form.coursePrice, {
+                        'attr': {
+                            'class': 'form-control' ~ (form.coursePrice.vars.valid ? '' : ' is-invalid'),
+                            'placeholder': 'Введите стоимость курса'
+                        }
+                    }) }}
+                    {{ form_errors(form.coursePrice) }}
+                    <div class="form-text">Поле обязательно для курсов типа "Аренда" и "Покупка"</div>
+                </div>
+
+                {% for message in app.flashes('error') %}
+                    <div class="alert alert-danger">
+                        {{ message }}
+                    </div>
+                {% endfor %}
 
                 <div class="d-flex justify-content-between mt-4">
                     <a href="{{ path('course_show_all') }}" class="btn btn-secondary">Назад</a>
                     <button type="submit" class="btn btn-primary">Создать</button>
                 </div>
-            </form>
+            {{ form_end(form) }}
         </div>
     </div>
+
+
 {% endblock %}

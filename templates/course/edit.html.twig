@@ -6,6 +6,11 @@
     <link href="{{ asset('css/course-forms.css') }}" rel="stylesheet">
 {% endblock %}
 
+{% block javascripts %}
+    {{ parent() }}
+    <script src="{{ asset('js/course-forms.js') }}"></script>
+{% endblock %}
+
 {% block title %}Редактировать курс - {{ course.titleCourse }}{% endblock %}
 
 {% block body %}
@@ -64,6 +69,48 @@
                 </div>
             </div>
 
+            <div class="mb-4">
+                {{ form_label(form.courseType, 'Тип курса', {
+                    'label_attr': {'class': 'form-label fw-bold'}
+                }) }}
+                {{ form_widget(form.courseType, {
+                    'attr': {
+                        'class': 'form-control' ~ (form.courseType.vars.valid ? '' : ' is-invalid')
+                    }
+                }) }}
+                <div class="invalid-feedback">
+                    {{ form_errors(form.courseType) }}
+                </div>
+            </div>
+
+            <div class="mb-4" id="price_field" style="display: none;">
+                {{ form_label(form.coursePrice, 'Стоимость курса', {
+                    'label_attr': {'class': 'form-label fw-bold'}
+                }) }}
+                {{ form_widget(form.coursePrice, {
+                    'attr': {
+                        'class': 'form-control' ~ (form.coursePrice.vars.valid ? '' : ' is-invalid'),
+                        'placeholder': 'Введите стоимость курса'
+                    }
+                }) }}
+                <div class="invalid-feedback">
+                    {{ form_errors(form.coursePrice) }}
+                </div>
+                <div class="form-text">Поле обязательно для курсов типа "Аренда" и "Покупка"</div>
+            </div>
+
+            {% for message in app.flashes('error') %}
+                <div class="alert alert-danger">
+                    {{ message }}
+                </div>
+            {% endfor %}
+
+            {% for message in app.flashes('success') %}
+                <div class="alert alert-success">
+                    {{ message }}
+                </div>
+            {% endfor %}
+
             <div class="d-flex justify-content-between mt-5">
                 <a href="{{ path('course_show', {'idCourse': course.idCourse}) }}" 
                    class="btn btn-outline-secondary">
@@ -78,4 +125,6 @@
         </div>
     </div>
 </div>
+
+
 {% endblock %}

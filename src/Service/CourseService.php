@@ -4,7 +4,10 @@ namespace App\Service;
 
 use App\Entity\Course;
 use App\Entity\Lesson;
+use App\Form\CourseType;
+use App\Form\LessonType;
 use Doctrine\ORM\EntityManagerInterface;
+use Symfony\Component\Form\FormFactoryInterface;
 use Symfony\Component\Validator\Validator\ValidatorInterface;
 use Symfony\Component\Security\Core\Authentication\Token\Storage\TokenStorageInterface;
 
@@ -14,17 +17,20 @@ class CourseService
     private BillingClient $billingClient;
     private TokenStorageInterface $tokenStorage;
     private ValidatorInterface $validator;
+    private FormFactoryInterface $formFactory;
 
     public function __construct(
         EntityManagerInterface $entityManager,
         BillingClient $billingClient,
         TokenStorageInterface $tokenStorage,
-        ValidatorInterface $validator
+        ValidatorInterface $validator,
+        FormFactoryInterface $formFactory
     ) {
         $this->entityManager = $entityManager;
         $this->billingClient = $billingClient;
         $this->tokenStorage = $tokenStorage;
         $this->validator = $validator;
+        $this->formFactory = $formFactory;
     }
 
     public function getCourse(int $idCourse): ?Course
@@ -69,6 +75,170 @@ class CourseService
             'errors' => [],
             'course' => $course
         ];
+    }
+
+    public function createCourseWithBilling(string $symbolCode, string $titleCourse, ?string $description, string $courseType, ?float $coursePrice): array
+    {
+        // Проверяем валидность данных курса для StudyOn
+        $course = new Course();
+        $course->setSymbolCode($symbolCode);
+        $course->setTitleCourse($titleCourse);
+        $course->setDescription($description);
+
+        $errors = $this->validator->validate($course);
+        $errorMessages = [];
+
+        if (count($errors) > 0) {
+            foreach ($errors as $error) {
+                $propertyPath = $error->getPropertyPath();
+                $fieldName = strtolower(preg_replace('/(?<!^)([A-Z])/', '_$1', $propertyPath));
+                $errorMessages[$fieldName] = $error->getMessage();
+            }
+            return [
+                'success' => false,
+                'errors' => $errorMessages,
+                'course' => null
+            ];
+        }
+
+        // Получаем токен пользователя
+        $token = $this->tokenStorage->getToken();
+        if (!$token || !$token->getUser()) {
+            return [
+                'success' => false,
+                'errors' => ['auth' => 'Требуется аутентификация'],
+                'course' => null
+            ];
+        }
+
+        $user = $token->getUser();
+        $apiToken = $user->getApiToken();
+
+        if (!$apiToken) {
+            return [
+                'success' => false,
+                'errors' => ['auth' => 'Отсутствует API токен'],
+                'course' => null
+            ];
+        }
+
+        // Подготавливаем данные для биллинга
+        $billingData = [
+            'code' => $symbolCode,
+            'title' => $titleCourse,
+            'type' => $courseType,
+        ];
+
+        if ($courseType !== 'free' && $coursePrice !== null) {
+            $billingData['price'] = $coursePrice;
+        }
+
+        try {
+            // Создаем курс в биллинге
+            $billingResponse = $this->billingClient->createCourse($apiToken, $billingData);
+            
+            if (!isset($billingResponse['success']) || !$billingResponse['success']) {
+                return [
+                    'success' => false,
+                    'errors' => ['billing' => 'Ошибка создания курса в биллинге'],
+                    'course' => null
+                ];
+            }
+
+            // Если в биллинге все успешно, создаем курс в StudyOn
+            $this->entityManager->persist($course);
+            $this->entityManager->flush();
+
+            return [
+                'success' => true,
+                'errors' => [],
+                'course' => $course
+            ];
+
+        } catch (\Throwable $e) {
+            return [
+                'success' => false,
+                'errors' => ['billing' => 'Ошибка связи с биллингом: ' . $e->getMessage()],
+                'course' => null
+            ];
+        }
+    }
+
+    public function updateCourseWithBilling(Course $course, string $newSymbolCode, string $courseType, ?float $coursePrice): array
+    {
+        $oldSymbolCode = $course->getSymbolCode();
+        
+        // Получаем токен пользователя
+        $token = $this->tokenStorage->getToken();
+        if (!$token || !$token->getUser()) {
+            return [
+                'success' => false,
+                'errors' => ['auth' => 'Требуется аутентификация']
+            ];
+        }
+
+        $user = $token->getUser();
+        $apiToken = $user->getApiToken();
+
+        if (!$apiToken) {
+            return [
+                'success' => false,
+                'errors' => ['auth' => 'Отсутствует API токен']
+            ];
+        }
+
+        // Подготавливаем данные для биллинга
+        $billingData = [
+            'code' => $newSymbolCode,
+            'title' => $course->getTitleCourse(),
+            'type' => $courseType,
+        ];
+
+        if ($courseType !== 'free' && $coursePrice !== null) {
+            $billingData['price'] = $coursePrice;
+        }
+
+        try {
+            // Обновляем курс в биллинге (используем старый символьный код в URL)
+            $billingResponse = $this->billingClient->updateCourse($apiToken, $oldSymbolCode, $billingData);
+            
+            if (!isset($billingResponse['success']) || !$billingResponse['success']) {
+                return [
+                    'success' => false,
+                    'errors' => ['billing' => 'Ошибка обновления курса в биллинге']
+                ];
+            }
+
+            // Если в биллинге все успешно, обновляем курс в StudyOn
+            $course->setSymbolCode($newSymbolCode);
+            $this->entityManager->flush();
+
+            return [
+                'success' => true,
+                'errors' => []
+            ];
+
+        } catch (\Throwable $e) {
+            return [
+                'success' => false,
+                'errors' => ['billing' => 'Ошибка связи с биллингом: ' . $e->getMessage()]
+            ];
+        }
+    }
+
+    public function getCourseFromBilling(string $courseCode): ?array
+    {
+        try {
+            $courses = $this->billingClient->getCourses();
+            foreach ($courses as $course) {
+                if ($course['code'] === $courseCode) {
+                    return $course;
+                }
+            }
+            return null;
+        } catch (\Throwable $e) {
+            return null;
+        }
     }
 
     public function createLesson(Lesson $lesson): void
@@ -187,5 +357,84 @@ class CourseService
             'viewCourses' => $viewCourses,
             'balance' => $balance
         ];
+    }
+
+    public function handleCourseCreation(Course $course, array $formData): array
+    {
+        $courseType = $formData['courseType'];
+        $coursePrice = $formData['coursePrice'];
+
+        // Дополнительная валидация для платных курсов
+        if (in_array($courseType, ['rent', 'buy']) && (empty($coursePrice) || $coursePrice <= 0)) {
+            return [
+                'success' => false,
+                'errors' => ['coursePrice' => 'Для платных курсов необходимо указать стоимость больше 0'],
+                'course' => null
+            ];
+        }
+
+        return $this->createCourseWithBilling(
+            $course->getSymbolCode(),
+            $course->getTitleCourse(),
+            $course->getDescription(),
+            $courseType,
+            $coursePrice
+        );
+    }
+
+    public function prepareCourseEditForm(Course $course): array
+    {
+        // Получаем текущие данные курса из биллинга
+        $billingCourse = $this->getCourseFromBilling($course->getSymbolCode());
+        
+        $formData = [];
+        if ($billingCourse) {
+            $formData['courseType'] = $billingCourse['type'];
+            if (isset($billingCourse['price'])) {
+                $formData['coursePrice'] = (float) $billingCourse['price'];
+            }
+        }
+
+        return $formData;
+    }
+
+    public function handleCourseUpdate(Course $course, array $formData): array
+    {
+        $courseType = $formData['courseType'];
+        $coursePrice = $formData['coursePrice'];
+        $newSymbolCode = $course->getSymbolCode();
+
+        $result = $this->updateCourseWithBilling(
+            $course,
+            $newSymbolCode,
+            $courseType,
+            $coursePrice
+        );
+
+        if ($result['success']) {
+            $this->updateCourse($course);
+        }
+
+        return $result;
+    }
+
+    public function createLessonForm(Course $course): array
+    {
+        $lesson = new Lesson();
+        $lesson->setCourse($course);
+
+        $form = $this->formFactory->create(LessonType::class, $lesson, [
+            'submit_label' => 'Добавить урок'
+        ]);
+
+        return [
+            'lesson' => $lesson,
+            'form' => $form
+        ];
+    }
+
+    public function handleLessonCreation(Lesson $lesson): void
+    {
+        $this->createLesson($lesson);
     }
 } 

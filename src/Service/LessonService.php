@@ -4,8 +4,10 @@ namespace App\Service;
 
 use App\Entity\Lesson;
 use App\Entity\Course;
+use App\Form\LessonType;
 use Doctrine\ORM\EntityManagerInterface;
 use App\Service\BillingClient;
+use Symfony\Component\Form\FormFactoryInterface;
 use Symfony\Component\Security\Core\Exception\AccessDeniedException;
 use Symfony\Component\Validator\Validator\ValidatorInterface;
 
@@ -14,12 +16,18 @@ class LessonService
     private EntityManagerInterface $entityManager;
     private BillingClient $billingClient;
     private ValidatorInterface $validator;
+    private FormFactoryInterface $formFactory;
 
-    public function __construct(EntityManagerInterface $entityManager, BillingClient $billingClient, ValidatorInterface $validator)
-    {
+    public function __construct(
+        EntityManagerInterface $entityManager, 
+        BillingClient $billingClient, 
+        ValidatorInterface $validator,
+        FormFactoryInterface $formFactory
+    ) {
         $this->entityManager = $entityManager;
         $this->billingClient = $billingClient;
         $this->validator = $validator;
+        $this->formFactory = $formFactory;
     }
 
     public function getLesson(int $idLesson): ?Lesson
@@ -72,6 +80,16 @@ class LessonService
     {
         $errors = $this->validator->validate($lesson);
         return $errors;
+    }
+
+    public function createEditForm(Lesson $lesson): mixed
+    {
+        return $this->formFactory->create(LessonType::class, $lesson);
+    }
+
+    public function handleLessonUpdate(Lesson $lesson): void
+    {
+        $this->updateLesson();
     }
 
     public function updateLesson(): void

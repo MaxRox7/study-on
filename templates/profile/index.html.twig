@@ -34,8 +34,10 @@
                         <td>{{ t.type == 'payment' ? 'Списание' : 'Пополнение' }}</td>
                         <td>{{ t.amount }}</td>
                         <td>
-                            {% if t.course_code is defined %}
-                                <a href="{{ path('course_show', {'idCourse': _self.getCourseIdByCode(t.course_code)}) }}">{{ t.course_code }}</a>
+                            {% if t.course_code is defined and courseCodes[t.course_code] is defined and courseCodes[t.course_code] is not null %}
+                                <a href="{{ path('course_show', {'idCourse': courseCodes[t.course_code]}) }}">{{ t.course_code }}</a>
+                            {% elseif t.course_code is defined %}
+                                {{ t.course_code }}
                             {% else %}-{% endif %}
                         </td>
                     </tr>
@@ -45,10 +47,7 @@
     {% endif %}
 </div>
 
-{% macro getCourseIdByCode(code) %}
-    {# Здесь должен быть вызов из контроллера, но макрос для Twig — заглушка #}
-    {{ code }}
-{% endmacro %}
+
 
 <div class="container mt-5">
     <div class="card shadow-sm">
