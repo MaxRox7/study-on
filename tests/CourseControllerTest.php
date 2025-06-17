@@ -43,35 +43,7 @@ class CourseControllerTest extends WebTestCase
         $this->assertResponseStatusCodeSame(404);
     }
 
-    public function testLoginAndCourseListWithMockBillingClient(): void
-    {
-        $client = static::createClient();
-        $client->disableReboot();
-
-        // Подменяем BillingClient МОКом
-        static::getContainer()->set(BillingClient::class, new BillingClientMock());
-
-        // Отправляем запрос на логин
-        $crawler = $client->request('GET', '/login');
-
-        // Отправляем форму логина с правильными данными из MOCK
-        $form = $crawler->selectButton('Войти')->form([
-            'email' => 'user@mail.ru',
-            'password' => '123456',
-        ]);
-
-        $client->submit($form);
-
-        // Проверяем, что редирект сработал (например, на /courses)
-        $this->assertResponseRedirects('/courses');
-
-        // Переходим по редиректу
-        $client->followRedirect();
-        // echo $client->getResponse()->getContent(); // Добавьте это для отладки
-        // Проверка страницы курсов
-        $this->assertResponseIsSuccessful();
-        $this->assertSelectorTextContains('h1', 'Все курсы');
-    }
+    
 
     public function testCourseCreationForm(): void
     {
@@ -90,7 +62,7 @@ class CourseControllerTest extends WebTestCase
              'password' => 'password',
          ]);
          $client->submit($data);
-         echo $client->getResponse()->getContent(); // Добавьте это для отладки
+        //  echo $client->getResponse()->getContent(); // Добавьте это для отладки
 
         // Переходим на страницу курсов
         $crawler = $client->request('GET', '/courses');

@@ -16,6 +16,36 @@ class SecurityTest extends WebTestCase
     {
         return [AppFixtures::class];
     }
+    
+    public function testLoginAndCourseListWithMockBillingClient(): void
+    {
+        $client = static::createClient();
+        $client->disableReboot();
+
+        // Подменяем BillingClient МОКом
+        static::getContainer()->set(BillingClient::class, new BillingClientMock());
+
+        // Отправляем запрос на логин
+        $crawler = $client->request('GET', '/login');
+
+        // Отправляем форму логина с правильными данными из MOCK
+        $form = $crawler->selectButton('Войти')->form([
+            'email' => 'user@mail.ru',
+            'password' => '123456',
+        ]);
+
+        $client->submit($form);
+
+        // Проверяем, что редирект сработал (например, на /courses)
+        $this->assertResponseRedirects('/courses');
+
+        // Переходим по редиректу
+        $client->followRedirect();
+        // echo $client->getResponse()->getContent(); // Добавьте это для отладки
+        // Проверка страницы курсов
+        $this->assertResponseIsSuccessful();
+        $this->assertSelectorTextContains('h1', 'Все курсы');
+    }
 
     public function testUnauthorizedUserCannotAccessLessons(): void
     {
@@ -350,5 +380,179 @@ class SecurityTest extends WebTestCase
         // Но не должен видеть админские кнопки
         $this->assertSelectorNotExists('a:contains("Редактировать")');
         $this->assertSelectorNotExists('a:contains("Удалить")');
+    }
+
+    public function testSuccessfulRegistration(): void
+    {
+        $client = static::createClient();
+        $client->disableReboot();
+
+        // Подменяем BillingClient МОКом
+        static::getContainer()->set(BillingClient::class, new BillingClientMock());
+
+        // Отправляем запрос на страницу регистрации
+        $crawler = $client->request('GET', '/register');
+        $this->assertResponseIsSuccessful();
+        $this->assertSelectorTextContains('h1', 'Регистрация');
+
+        // Заполняем форму регистрации с корректными данными
+        $form = $crawler->selectButton('Зарегистрироваться')->form([
+            'email' => 'newuser@mail.ru',
+            'password' => 'password123',
+            'confirm_password' => 'password123',
+        ]);
+
+        $client->submit($form);
+
+        // Проверяем, что произошел редирект (успешная регистрация + аутентификация)
+        $this->assertResponseRedirects();
+
+        // Переходим по редиректу
+        $client->followRedirect();
+        $this->assertResponseIsSuccessful();
+    }
+
+    public function testRegistrationWithInvalidEmail(): void
+    {
+        $client = static::createClient();
+        $client->disableReboot();
+
+        // Подменяем BillingClient МОКом
+        static::getContainer()->set(BillingClient::class, new BillingClientMock());
+
+        // Отправляем запрос на страницу регистрации
+        $crawler = $client->request('GET', '/register');
+
+        // Заполняем форму с невалидным email
+        $form = $crawler->selectButton('Зарегистрироваться')->form([
+            'email' => 'invalid-email',
+            'password' => 'password123',
+            'confirm_password' => 'password123',
+        ]);
+
+        $client->submit($form);
+
+        // Должны остаться на странице регистрации
+        $this->assertResponseIsSuccessful();
+        $this->assertSelectorExists('.text-danger'); // Должна быть ошибка валидации
+    }
+
+    public function testRegistrationWithShortPassword(): void
+    {
+        $client = static::createClient();
+        $client->disableReboot();
+
+        // Подменяем BillingClient МОКом
+        static::getContainer()->set(BillingClient::class, new BillingClientMock());
+
+        // Отправляем запрос на страницу регистрации
+        $crawler = $client->request('GET', '/register');
+
+        // Заполняем форму с коротким паролем
+        $form = $crawler->selectButton('Зарегистрироваться')->form([
+            'email' => 'test@mail.ru',
+            'password' => '123', // Слишком короткий пароль
+            'confirm_password' => '123',
+        ]);
+
+        $client->submit($form);
+
+        // Должны остаться на странице регистрации с ошибкой
+        $this->assertResponseIsSuccessful();
+        $this->assertSelectorExists('.text-danger'); // Должна быть ошибка валидации
+    }
+
+    public function testRegistrationWithMismatchedPasswords(): void
+    {
+        $client = static::createClient();
+        $client->disableReboot();
+
+        // Подменяем BillingClient МОКом
+        static::getContainer()->set(BillingClient::class, new BillingClientMock());
+
+        // Отправляем запрос на страницу регистрации
+        $crawler = $client->request('GET', '/register');
+
+        // Заполняем форму с несовпадающими паролями
+        $form = $crawler->selectButton('Зарегистрироваться')->form([
+            'email' => 'test@mail.ru',
+            'password' => 'password123',
+            'confirm_password' => 'differentpassword',
+        ]);
+
+        $client->submit($form);
+
+        // Должны остаться на странице регистрации с ошибкой
+        $this->assertResponseIsSuccessful();
+        $this->assertSelectorExists('.text-danger'); // Должна быть ошибка валидации
+    }
+
+    public function testRegistrationWithEmptyFields(): void
+    {
+        $client = static::createClient();
+        $client->disableReboot();
+
+        // Подменяем BillingClient МОКом
+        static::getContainer()->set(BillingClient::class, new BillingClientMock());
+
+        // Отправляем запрос на страницу регистрации
+        $crawler = $client->request('GET', '/register');
+
+        // Заполняем форму с пустыми полями
+        $form = $crawler->selectButton('Зарегистрироваться')->form([
+            'email' => '',
+            'password' => '',
+            'confirm_password' => '',
+        ]);
+
+        $client->submit($form);
+
+        // Должны остаться на странице регистрации с ошибками
+        $this->assertResponseIsSuccessful();
+        $this->assertSelectorExists('.text-danger'); // Должны быть ошибки валидации
+    }
+
+    public function testAlreadyLoggedInUserRedirectsFromRegistration(): void
+    {
+        $client = static::createClient();
+        $client->disableReboot();
+
+        // Подменяем BillingClient МОКом
+        static::getContainer()->set(BillingClient::class, new BillingClientMock());
+
+        // Сначала авторизуемся
+        $crawler = $client->request('GET', '/login');
+        $form = $crawler->selectButton('Войти')->form([
+            'email' => 'user@mail.ru',
+            'password' => '123456',
+        ]);
+        $client->submit($form);
+
+        // Теперь пытаемся зайти на страницу регистрации
+        $client->request('GET', '/register');
+
+        // Должен быть редирект на профиль
+        $this->assertResponseRedirects('/profile');
+    }
+
+    public function testRegistrationPageDisplaysCorrectly(): void
+    {
+        $client = static::createClient();
+        $client->disableReboot();
+
+        // Подменяем BillingClient МОКом
+        static::getContainer()->set(BillingClient::class, new BillingClientMock());
+
+        // Отправляем запрос на страницу регистрации
+        $crawler = $client->request('GET', '/register');
+        $this->assertResponseIsSuccessful();
+
+        // Проверяем наличие основных элементов формы
+        $this->assertSelectorTextContains('h1', 'Регистрация');
+        $this->assertSelectorExists('input[name="email"]');
+        $this->assertSelectorExists('input[name="password"]');
+        $this->assertSelectorExists('input[name="confirm_password"]');
+        $this->assertSelectorExists('button[type="submit"]');
+        $this->assertSelectorTextContains('button[type="submit"]', 'Зарегистрироваться');
     }
 } 
