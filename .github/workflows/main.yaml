@@ -1,7 +1,7 @@
 name: CI
 on:
   push:
-    branches: [ "master" ]
+    branches: [ "new-branch" ]
   workflow_dispatch:
 jobs:
   build:
@@ -22,7 +22,7 @@ jobs:
       - name: Setting environment and composer
         # скорректируйте название БД и контейнера, если нужно
         run: |
-          echo "DATABASE_URL=pgsql://pguser:pguser@study-on_postgres_1:5432/study_on" >> .env.local
+          echo "DATABASE_URL=pgsql://pguser:pguser@study-on_postgres_1:5433/study_on" >> .env.local
           composer install
       - name: Setting Docker
         run: |
@@ -40,7 +40,7 @@ jobs:
       - name: Setting test environment and DB
         # скорректируйте название БД и контейнера, если нужно
         run: |
-          echo "DATABASE_URL=pgsql://pguser:pguser@study-on_postgres_1:5432/study_on" >> .env.test.local
+          echo "DATABASE_URL=pgsql://pguser:pguser@study-on_postgres_1:5433/study_on" >> .env.test.local
           ls -la
           docker ps -a
           docker-compose exec -T php bin/console doctrine:database:drop --force --env=test || true
