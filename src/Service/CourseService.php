@@ -432,9 +432,4 @@ class CourseService
             'form' => $form
         ];
     }
-
-    public function handleLessonCreation(Lesson $lesson): void
-    {
-        $this->createLesson($lesson);
-    }
 } 

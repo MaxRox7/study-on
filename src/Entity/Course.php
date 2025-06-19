@@ -34,7 +34,7 @@ class Course
         minMessage: 'Название курса должно содержать минимум {{ limit }} символа.',
         maxMessage: 'Название курса не может превышать {{ limit }} символов.'
     )]
-    private ?string $title_course = null;
+    private ?string $titleCourse = null;
 
     #[ORM\Column(type: 'text', length: 1000, nullable: true)]
     #[Assert\Length(
@@ -72,12 +72,12 @@ class Course
 
     public function getTitleCourse(): ?string
     {
-        return $this->title_course;
+        return $this->titleCourse;
     }
 
-    public function setTitleCourse(string $title_course): static
+    public function setTitleCourse(string $titleCourse): static
     {
-        $this->title_course = $title_course;
+        $this->titleCourse = $titleCourse;
 
         return $this;
     }

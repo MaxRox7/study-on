@@ -36,7 +36,7 @@ class CourseController extends AbstractController
         ]);
     }
 
-    #[Route('/course/create', name: 'course_create')]
+    #[Route('/courses/create', name: 'course_create')]
     #[IsGranted('ROLE_SUPER_ADMIN')]
     public function create_course(Request $request): Response
     {
@@ -127,7 +127,7 @@ class CourseController extends AbstractController
         ]);
     }
 
-    #[Route('/course/{idCourse}', name: 'course_show', requirements: ['idCourse' => '\d+'])]
+    #[Route('/courses/{idCourse}', name: 'course_show', requirements: ['idCourse' => '\d+'])]
     public function show(int $idCourse, Request $request): Response
     {
         $course = $this->courseService->getCourse($idCourse);
@@ -143,8 +143,9 @@ class CourseController extends AbstractController
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
-            $this->courseService->handleLessonCreation($lesson);
-            return $this->redirectToRoute('course_show', ['idCourse' => $idCourse]);
+            $this->courseService->createLesson($lesson);
+            $this->addFlash('success', 'Урок успешно добавлен!');
+            return $this->redirectToRoute('course_show', ['idCourse' => $course->getIdCourse()]);
         }
 
         return $this->render('course/show.html.twig', [

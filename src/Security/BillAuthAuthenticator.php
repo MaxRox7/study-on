@@ -48,9 +48,8 @@ class BillAuthAuthenticator extends AbstractLoginFormAuthenticator
             return new RedirectResponse($targetPath);
         }
 
-        // For example:
-        // return new RedirectResponse($this->urlGenerator->generate('some_route'));
-        throw new \Exception('TODO: provide a valid redirect inside '.__FILE__);
+        // Редирект на главную страницу курсов после успешного входа
+        return new RedirectResponse($this->urlGenerator->generate('course_show_all'));
     }
 
     protected function getLoginUrl(Request $request): string

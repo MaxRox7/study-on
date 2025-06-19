@@ -1,0 +1,26 @@
+/* Стили для страниц авторизации и регистрации */
+
+/* Логин страница */
+.login-container {
+    min-height: 80vh;
+}
+
+.login-card {
+    width: 100%;
+    max-width: 400px;
+}
+
+/* Регистрация */
+.hidden-error {
+    display: none;
+}
+
+/* Общие стили */
+.full-height-container {
+    min-height: 80vh;
+}
+
+.auth-card {
+    width: 100%;
+    max-width: 400px;
+} 

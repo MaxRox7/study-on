@@ -111,9 +111,9 @@ class LessonControllerTest extends WebTestCase
         $form = $crawler->selectButton('Добавить урок')->form();
 
         // Исправленный путь к полям формы
-        $form['form[titleLesson]'] = 'New Lesson';
-        $form['form[content]'] = 'Lesson content here.';
-        $form['form[orderNumber]'] = 1;
+        $form['lesson[titleLesson]'] = 'New Lesson';
+        $form['lesson[content]'] = 'Lesson content here.';
+        $form['lesson[orderNumber]'] = 1;
 
         // Отправляем форму
         $client->submit($form);
@@ -171,9 +171,9 @@ class LessonControllerTest extends WebTestCase
         $form = $crawler->selectButton('Добавить урок')->form();
 
         // Исправленный путь к полям формы
-        $form['form[titleLesson]'] = 'ff';
-        $form['form[content]'] = 'Lesson content here.';
-        $form['form[orderNumber]'] = 1;
+        $form['lesson[titleLesson]'] = 'ff';
+        $form['lesson[content]'] = 'Lesson content here.';
+        $form['lesson[orderNumber]'] = 1;
 
         // Отправляем форму
         $client->submit($form);
@@ -181,16 +181,16 @@ class LessonControllerTest extends WebTestCase
         $this->assertResponseIsSuccessful();
         $this->assertSelectorExists('.invalid-feedback'); // проверяем наличие блока ошибки
 
-        $form['form[titleLesson]'] = 'Title_lesson';
-        $form['form[content]'] = '1';
-        $form['form[orderNumber]'] = 1;
+        $form['lesson[titleLesson]'] = 'Title_lesson';
+        $form['lesson[content]'] = '1';
+        $form['lesson[orderNumber]'] = 1;
         $client->submit($form);
         $this->assertResponseIsSuccessful();
         $this->assertSelectorExists('.invalid-feedback'); // проверяем наличие блока ошибки
 
-        $form['form[titleLesson]'] = 'Title_lesson';
-        $form['form[content]'] = 'content';
-        $form['form[orderNumber]'] = 'a';
+        $form['lesson[titleLesson]'] = 'Title_lesson';
+        $form['lesson[content]'] = 'content';
+        $form['lesson[orderNumber]'] = 'a';
 
         $client->submit($form);
         $this->assertResponseIsSuccessful();
@@ -237,9 +237,9 @@ class LessonControllerTest extends WebTestCase
         $form = $crawler->selectButton('Сохранить')->form();
 
         // Изменяем данные урока
-        $form['form[titleLesson]'] = 'Updated Lesson Title';
-        $form['form[content]'] = 'Updated lesson content';
-        $form['form[orderNumber]'] = 2;
+        $form['lesson[titleLesson]'] = 'Updated Lesson Title';
+        $form['lesson[content]'] = 'Updated lesson content';
+        $form['lesson[orderNumber]'] = 2;
 
         // Отправляем форму
         $client->submit($form);
@@ -285,9 +285,9 @@ class LessonControllerTest extends WebTestCase
         $form = $crawler->selectButton('Сохранить')->form();
 
         // Исправленный путь к полям формы
-        $form['form[titleLesson]'] = 'ff';
-        $form['form[content]'] = 'Lesson content here.';
-        $form['form[orderNumber]'] = 1;
+        $form['lesson[titleLesson]'] = 'ff';
+        $form['lesson[content]'] = 'Lesson content here.';
+        $form['lesson[orderNumber]'] = 1;
 
         // Отправляем форму
         $client->submit($form);
@@ -305,9 +305,9 @@ class LessonControllerTest extends WebTestCase
         $crawler = $client->click($editLink);
         
         $form = $crawler->selectButton('Сохранить')->form();
-        $form['form[titleLesson]'] = 'Title_lesson';
-        $form['form[content]'] = '1';
-        $form['form[orderNumber]'] = 1;
+        $form['lesson[titleLesson]'] = 'Title_lesson';
+        $form['lesson[content]'] = '1';
+        $form['lesson[orderNumber]'] = 1;
 
         $client->submit($form);
         $this->assertResponseIsSuccessful();
@@ -320,9 +320,9 @@ class LessonControllerTest extends WebTestCase
         $crawler = $client->click($editLink);
         
         $form = $crawler->selectButton('Сохранить')->form();
-        $form['form[titleLesson]'] = 'Title_lesson';
-        $form['form[content]'] = 'content';
-        $form['form[orderNumber]'] = 'a';
+        $form['lesson[titleLesson]'] = 'Title_lesson';
+        $form['lesson[content]'] = 'content';
+        $form['lesson[orderNumber]'] = 'a';
 
         $client->submit($form);
         $this->assertResponseIsSuccessful();

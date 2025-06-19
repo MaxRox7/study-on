@@ -36,6 +36,9 @@
                 <div class="invalid-feedback">
                     {{ form_errors(form.titleCourse) }}
                 </div>
+                <div class="help-block text-danger">
+                    {{ form_errors(form.titleCourse) }}
+                </div>
             </div>
 
             <div class="mb-4">
@@ -49,6 +52,9 @@
                     }
                 }) }}
                 <div class="invalid-feedback">
+                    {{ form_errors(form.symbolCode) }}
+                </div>
+                <div class="help-block text-danger">
                     {{ form_errors(form.symbolCode) }}
                 </div>
             </div>
@@ -67,6 +73,9 @@
                 <div class="invalid-feedback">
                     {{ form_errors(form.description) }}
                 </div>
+                <div class="help-block text-danger">
+                    {{ form_errors(form.description) }}
+                </div>
             </div>
 
             <div class="mb-4">
@@ -81,9 +90,12 @@
                 <div class="invalid-feedback">
                     {{ form_errors(form.courseType) }}
                 </div>
+                <div class="help-block text-danger">
+                    {{ form_errors(form.courseType) }}
+                </div>
             </div>
 
-            <div class="mb-4" id="price_field" style="display: none;">
+            <div class="mb-4 hidden-field" id="price_field">
                 {{ form_label(form.coursePrice, 'Стоимость курса', {
                     'label_attr': {'class': 'form-label fw-bold'}
                 }) }}

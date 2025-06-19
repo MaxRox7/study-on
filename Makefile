@@ -28,7 +28,13 @@ encore_prod:
 	@ yarn encore production
 
 phpunit:
-	@${PHP} bin/phpunit
+	@${PHP} bin/phpunit --testdox
+
+phpunit-clean:
+	@${PHP} bin/phpunit --no-output
+
+phpunit-brief:
+	@${PHP} bin/phpunit --testdox-html=/dev/null
 
 git-reset:
 	@git reset --hard

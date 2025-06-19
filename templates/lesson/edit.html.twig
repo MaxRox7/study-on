@@ -5,6 +5,7 @@
 {% block stylesheets %}
     {{ parent() }}
     <link href="{{ asset('build/app.css') }}" rel="stylesheet">
+    <link href="{{ asset('css/lesson-styles.css') }}" rel="stylesheet">
 {% endblock %}
 
 {% block body %}
@@ -34,8 +35,7 @@
                         <div class="form-floating mb-4">
                             {{ form_widget(form.content, {
                                 'attr': {
-                                    'class': 'form-control' ~ (form.content.vars.errors|length ? ' is-invalid' : ''),
-                                    'style': 'height: 200px;',
+                                    'class': 'form-control lesson-content-height' ~ (form.content.vars.errors|length ? ' is-invalid' : ''),
                                     'placeholder': 'Содержимое урока'
                                 }
                             }) }}

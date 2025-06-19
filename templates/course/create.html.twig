@@ -27,7 +27,9 @@
                             'class': 'form-control' ~ (form.titleCourse.vars.valid ? '' : ' is-invalid')
                         }
                     }) }}
-                    {{ form_errors(form.titleCourse) }}
+                    <div class="help-block text-danger">
+                        {{ form_errors(form.titleCourse) }}
+                    </div>
                 </div>
 
                 <div class="mb-3">
@@ -37,7 +39,9 @@
                             'class': 'form-control' ~ (form.symbolCode.vars.valid ? '' : ' is-invalid')
                         }
                     }) }}
-                    {{ form_errors(form.symbolCode) }}
+                    <div class="help-block text-danger">
+                        {{ form_errors(form.symbolCode) }}
+                    </div>
                 </div>
 
                 <div class="mb-3">
@@ -47,7 +51,9 @@
                             'class': 'form-control' ~ (form.description.vars.valid ? '' : ' is-invalid')
                         }
                     }) }}
-                    {{ form_errors(form.description) }}
+                    <div class="help-block text-danger">
+                        {{ form_errors(form.description) }}
+                    </div>
                 </div>
 
                 <div class="mb-3">
@@ -57,10 +63,12 @@
                             'class': 'form-control' ~ (form.courseType.vars.valid ? '' : ' is-invalid')
                         }
                     }) }}
-                    {{ form_errors(form.courseType) }}
+                    <div class="help-block text-danger">
+                        {{ form_errors(form.courseType) }}
+                    </div>
                 </div>
 
-                <div class="mb-3" id="price_field" style="display: none;">
+                <div class="mb-3 hidden-field" id="price_field">
                     {{ form_label(form.coursePrice, null, {'label_attr': {'class': 'form-label'}}) }}
                     {{ form_widget(form.coursePrice, {
                         'attr': {
@@ -68,7 +76,9 @@
                             'placeholder': 'Введите стоимость курса'
                         }
                     }) }}
-                    {{ form_errors(form.coursePrice) }}
+                    <div class="help-block text-danger">
+                        {{ form_errors(form.coursePrice) }}
+                    </div>
                     <div class="form-text">Поле обязательно для курсов типа "Аренда" и "Покупка"</div>
                 </div>
 

@@ -150,7 +150,7 @@ class SecurityTest extends WebTestCase
         $client->submit($data);
 
         // Пытаемся получить прямой доступ к созданию курса
-        $client->request('GET', '/course/create');
+        $client->request('GET', '/courses/create');
         
         // Должен быть статус 403 (Forbidden)
         $this->assertResponseStatusCodeSame(403);
@@ -309,7 +309,7 @@ class SecurityTest extends WebTestCase
         $this->assertSelectorExists('a:contains("+ Создать курс")');
 
         // Проверяем доступ к созданию курса
-        $client->request('GET', '/course/create');
+        $client->request('GET', '/courses/create');
         $this->assertResponseIsSuccessful();
     }
 

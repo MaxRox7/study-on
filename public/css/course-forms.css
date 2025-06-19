@@ -63,4 +63,9 @@ h1 {
 
 .btn-outline-secondary:hover {
     background-color: #f8f9fa;
+}
+
+/* Новые классы для замены встроенных стилей */
+.hidden-field {
+    display: none;
 } 

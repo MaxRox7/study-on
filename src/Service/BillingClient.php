@@ -25,7 +25,7 @@ class BillingClient
      */
     public function request(
         string $method = 'GET',
-        string $url = null,
+        ?string $url = null,
         array $data = [],
         array $headers = [],
         string $token = ''

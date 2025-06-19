@@ -3,6 +3,7 @@
 namespace App\Controller;
 
 use App\Service\LessonService;
+use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -12,10 +13,12 @@ use Symfony\Component\Security\Http\Attribute\IsGranted;
 final class LessonController extends AbstractController
 {
     private LessonService $lessonService;
+    private EntityManagerInterface $entityManager;
 
-    public function __construct(LessonService $lessonService)
+    public function __construct(LessonService $lessonService, EntityManagerInterface $entityManager)
     {
         $this->lessonService = $lessonService;
+        $this->entityManager = $entityManager;
     }
 
     #[Route('/lesson/{idLesson}', name: 'lesson_show')]
@@ -52,10 +55,11 @@ final class LessonController extends AbstractController
         if (!$lesson) {
             throw $this->createNotFoundException('Урок не найден');
         }
-        $form = $this->lessonService->createEditForm($lesson);
+        $form = $this->createForm(\App\Form\LessonType::class, $lesson);
         $form->handleRequest($request);
         if ($form->isSubmitted() && $form->isValid()) {
-            $this->lessonService->handleLessonUpdate($lesson);
+            $this->entityManager->flush();
+            $this->addFlash('success', 'Урок успешно обновлен!');
             return $this->redirectToRoute('course_show', ['idCourse' => $lesson->getCourse()->getIdCourse()]);
         }
         return $this->render('lesson/edit.html.twig', [

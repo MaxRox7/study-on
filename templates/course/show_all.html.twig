@@ -19,11 +19,11 @@
         <div class="balance-card text-center" id="balanceAlert" data-balance="{{ balance }}">
             <div class="row align-items-center">
                 <div class="col-md-6">
-                    <i class="bi bi-wallet2 me-2" style="font-size: 1.5rem;"></i>
-                    <span style="font-size: 1.1rem; opacity: 0.9;">Ваш баланс:</span>
+                    <i class="bi bi-wallet2 me-2 balance-icon"></i>
+                    <span class="balance-text">Ваш баланс:</span>
                 </div>
                 <div class="col-md-6">
-                    <h3 class="mb-0" style="font-weight: 700;">
+                    <h3 class="mb-0 balance-amount">
                         {{ balance|number_format(2, '.', ' ') }} ₽
                     </h3>
                 </div>

@@ -16,6 +16,20 @@
     margin-bottom: 2rem;
 }
 
+/* Новые классы для замены встроенных стилей */
+.balance-icon {
+    font-size: 1.5rem;
+}
+
+.balance-text {
+    font-size: 1.1rem;
+    opacity: 0.9;
+}
+
+.balance-amount {
+    font-weight: 700;
+}
+
 .course-card {
     transition: all 0.3s ease;
     border: none;
