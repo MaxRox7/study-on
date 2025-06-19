@@ -1,66 +1,65 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <testsuites>
-  <testsuite name="" tests="48" assertions="174" errors="0" warnings="0" failures="0" skipped="0" time="1.616847">
-    <testsuite name="Project Test Suite" tests="48" assertions="174" errors="0" warnings="0" failures="0" skipped="0" time="1.616847">
-      <testsuite name="App\Tests\CourseControllerTest" file="/app/tests/CourseControllerTest.php" tests="7" assertions="33" errors="0" warnings="0" failures="0" skipped="0" time="0.439665">
-        <testcase name="testAllCoursesWithMockBillingClient" class="App\Tests\CourseControllerTest" classname="App.Tests.CourseControllerTest" file="/app/tests/CourseControllerTest.php" line="20" assertions="3" time="0.210480"/>
-        <testcase name="testCourseCreationForm" class="App\Tests\CourseControllerTest" classname="App.Tests.CourseControllerTest" file="/app/tests/CourseControllerTest.php" line="48" assertions="5" time="0.097164"/>
-        <testcase name="testAuthWithValidUserCredentials" class="App\Tests\CourseControllerTest" classname="App.Tests.CourseControllerTest" file="/app/tests/CourseControllerTest.php" line="110" assertions="2" time="0.013290"/>
-        <testcase name="testCourseValidationWithErrors" class="App\Tests\CourseControllerTest" classname="App.Tests.CourseControllerTest" file="/app/tests/CourseControllerTest.php" line="139" assertions="8" time="0.048863"/>
-        <testcase name="testCourseEditForm" class="App\Tests\CourseControllerTest" classname="App.Tests.CourseControllerTest" file="/app/tests/CourseControllerTest.php" line="205" assertions="4" time="0.023003"/>
-        <testcase name="testCourseEditValidationWithErrors" class="App\Tests\CourseControllerTest" classname="App.Tests.CourseControllerTest" file="/app/tests/CourseControllerTest.php" line="257" assertions="8" time="0.029725"/>
-        <testcase name="testDeleteCourse" class="App\Tests\CourseControllerTest" classname="App.Tests.CourseControllerTest" file="/app/tests/CourseControllerTest.php" line="320" assertions="3" time="0.017141"/>
+  <testsuite name="" tests="47" assertions="190" errors="0" warnings="0" failures="0" skipped="0" time="3.021660">
+    <testsuite name="Project Test Suite" tests="47" assertions="190" errors="0" warnings="0" failures="0" skipped="0" time="3.021660">
+      <testsuite name="App\Tests\CourseControllerTest" file="/app/tests/CourseControllerTest.php" tests="7" assertions="42" errors="0" warnings="0" failures="0" skipped="0" time="1.657721">
+        <testcase name="testAllCoursesWithMockBillingClient" class="App\Tests\CourseControllerTest" classname="App.Tests.CourseControllerTest" file="/app/tests/CourseControllerTest.php" line="20" assertions="3" time="1.348872"/>
+        <testcase name="testCourseCreationForm" class="App\Tests\CourseControllerTest" classname="App.Tests.CourseControllerTest" file="/app/tests/CourseControllerTest.php" line="48" assertions="5" time="0.148807"/>
+        <testcase name="testAuthWithValidUserCredentials" class="App\Tests\CourseControllerTest" classname="App.Tests.CourseControllerTest" file="/app/tests/CourseControllerTest.php" line="110" assertions="2" time="0.012778"/>
+        <testcase name="testCourseValidationWithErrors" class="App\Tests\CourseControllerTest" classname="App.Tests.CourseControllerTest" file="/app/tests/CourseControllerTest.php" line="139" assertions="11" time="0.046350"/>
+        <testcase name="testCourseEditForm" class="App\Tests\CourseControllerTest" classname="App.Tests.CourseControllerTest" file="/app/tests/CourseControllerTest.php" line="225" assertions="4" time="0.028374"/>
+        <testcase name="testCourseEditValidationWithErrors" class="App\Tests\CourseControllerTest" classname="App.Tests.CourseControllerTest" file="/app/tests/CourseControllerTest.php" line="277" assertions="14" time="0.045290"/>
+        <testcase name="testDeleteCourse" class="App\Tests\CourseControllerTest" classname="App.Tests.CourseControllerTest" file="/app/tests/CourseControllerTest.php" line="370" assertions="3" time="0.027250"/>
       </testsuite>
-      <testsuite name="App\Tests\CoursePaymentTest" file="/app/tests/CoursePaymentTest.php" tests="5" assertions="16" errors="0" warnings="0" failures="0" skipped="0" time="0.062530">
-        <testcase name="testPayForCourseSuccess" class="App\Tests\CoursePaymentTest" classname="App.Tests.CoursePaymentTest" file="/app/tests/CoursePaymentTest.php" line="17" assertions="3" time="0.013175"/>
-        <testcase name="testPayForCourseInsufficientFunds" class="App\Tests\CoursePaymentTest" classname="App.Tests.CoursePaymentTest" file="/app/tests/CoursePaymentTest.php" line="45" assertions="3" time="0.014407"/>
-        <testcase name="testPayForCourseWithoutAuth" class="App\Tests\CoursePaymentTest" classname="App.Tests.CoursePaymentTest" file="/app/tests/CoursePaymentTest.php" line="76" assertions="4" time="0.007854"/>
-        <testcase name="testPayForFreeCourse" class="App\Tests\CoursePaymentTest" classname="App.Tests.CoursePaymentTest" file="/app/tests/CoursePaymentTest.php" line="95" assertions="3" time="0.010927"/>
-        <testcase name="testPayForNonExistentCourse" class="App\Tests\CoursePaymentTest" classname="App.Tests.CoursePaymentTest" file="/app/tests/CoursePaymentTest.php" line="123" assertions="3" time="0.016168"/>
+      <testsuite name="App\Tests\CoursePaymentTest" file="/app/tests/CoursePaymentTest.php" tests="5" assertions="16" errors="0" warnings="0" failures="0" skipped="0" time="0.084482">
+        <testcase name="testPayForCourseSuccess" class="App\Tests\CoursePaymentTest" classname="App.Tests.CoursePaymentTest" file="/app/tests/CoursePaymentTest.php" line="17" assertions="3" time="0.018642"/>
+        <testcase name="testPayForCourseInsufficientFunds" class="App\Tests\CoursePaymentTest" classname="App.Tests.CoursePaymentTest" file="/app/tests/CoursePaymentTest.php" line="45" assertions="3" time="0.018982"/>
+        <testcase name="testPayForCourseWithoutAuth" class="App\Tests\CoursePaymentTest" classname="App.Tests.CoursePaymentTest" file="/app/tests/CoursePaymentTest.php" line="76" assertions="4" time="0.011277"/>
+        <testcase name="testPayForFreeCourse" class="App\Tests\CoursePaymentTest" classname="App.Tests.CoursePaymentTest" file="/app/tests/CoursePaymentTest.php" line="95" assertions="3" time="0.021290"/>
+        <testcase name="testPayForNonExistentCourse" class="App\Tests\CoursePaymentTest" classname="App.Tests.CoursePaymentTest" file="/app/tests/CoursePaymentTest.php" line="123" assertions="3" time="0.014291"/>
       </testsuite>
-      <testsuite name="App\Tests\LessonAccessTest" file="/app/tests/LessonAccessTest.php" tests="5" assertions="9" errors="0" warnings="0" failures="0" skipped="0" time="0.152264">
-        <testcase name="testUserCanAccessLessonOfPurchasedCourse" class="App\Tests\LessonAccessTest" classname="App.Tests.LessonAccessTest" file="/app/tests/LessonAccessTest.php" line="20" assertions="2" time="0.013906"/>
-        <testcase name="testUserCannotAccessLessonOfUnpurchasedCourse" class="App\Tests\LessonAccessTest" classname="App.Tests.LessonAccessTest" file="/app/tests/LessonAccessTest.php" line="60" assertions="1" time="0.109440"/>
-        <testcase name="testUserCanAccessRentedCourseBeforeExpiry" class="App\Tests\LessonAccessTest" classname="App.Tests.LessonAccessTest" file="/app/tests/LessonAccessTest.php" line="97" assertions="2" time="0.012828"/>
-        <testcase name="testAdminCanAccessAnyLesson" class="App\Tests\LessonAccessTest" classname="App.Tests.LessonAccessTest" file="/app/tests/LessonAccessTest.php" line="137" assertions="2" time="0.010431"/>
-        <testcase name="testUnauthenticatedUserCannotAccessLessons" class="App\Tests\LessonAccessTest" classname="App.Tests.LessonAccessTest" file="/app/tests/LessonAccessTest.php" line="177" assertions="2" time="0.005659"/>
+      <testsuite name="App\Tests\LessonAccessTest" file="/app/tests/LessonAccessTest.php" tests="5" assertions="9" errors="0" warnings="0" failures="0" skipped="0" time="0.153184">
+        <testcase name="testUserCanAccessLessonOfPurchasedCourse" class="App\Tests\LessonAccessTest" classname="App.Tests.LessonAccessTest" file="/app/tests/LessonAccessTest.php" line="20" assertions="2" time="0.016878"/>
+        <testcase name="testUserCannotAccessLessonOfUnpurchasedCourse" class="App\Tests\LessonAccessTest" classname="App.Tests.LessonAccessTest" file="/app/tests/LessonAccessTest.php" line="60" assertions="1" time="0.099829"/>
+        <testcase name="testUserCanAccessRentedCourseBeforeExpiry" class="App\Tests\LessonAccessTest" classname="App.Tests.LessonAccessTest" file="/app/tests/LessonAccessTest.php" line="97" assertions="2" time="0.015540"/>
+        <testcase name="testAdminCanAccessAnyLesson" class="App\Tests\LessonAccessTest" classname="App.Tests.LessonAccessTest" file="/app/tests/LessonAccessTest.php" line="137" assertions="2" time="0.013679"/>
+        <testcase name="testUnauthenticatedUserCannotAccessLessons" class="App\Tests\LessonAccessTest" classname="App.Tests.LessonAccessTest" file="/app/tests/LessonAccessTest.php" line="177" assertions="2" time="0.007258"/>
       </testsuite>
-      <testsuite name="App\Tests\LessonControllerTest" file="/app/tests/LessonControllerTest.php" tests="6" assertions="37" errors="0" warnings="0" failures="0" skipped="0" time="0.217881">
-        <testcase name="testAllLesons" class="App\Tests\LessonControllerTest" classname="App.Tests.LessonControllerTest" file="/app/tests/LessonControllerTest.php" line="22" assertions="5" time="0.062627"/>
-        <testcase name="testCreateLesson" class="App\Tests\LessonControllerTest" classname="App.Tests.LessonControllerTest" file="/app/tests/LessonControllerTest.php" line="71" assertions="6" time="0.032427"/>
-        <testcase name="testLessonValidation" class="App\Tests\LessonControllerTest" classname="App.Tests.LessonControllerTest" file="/app/tests/LessonControllerTest.php" line="131" assertions="8" time="0.031118"/>
-        <testcase name="testEditLesson" class="App\Tests\LessonControllerTest" classname="App.Tests.LessonControllerTest" file="/app/tests/LessonControllerTest.php" line="200" assertions="7" time="0.028516"/>
-        <testcase name="testEditLessonValidation" class="App\Tests\LessonControllerTest" classname="App.Tests.LessonControllerTest" file="/app/tests/LessonControllerTest.php" line="254" assertions="8" time="0.048496"/>
-        <testcase name="testDeleteCourse" class="App\Tests\LessonControllerTest" classname="App.Tests.LessonControllerTest" file="/app/tests/LessonControllerTest.php" line="333" assertions="3" time="0.014698"/>
+      <testsuite name="App\Tests\LessonControllerTest" file="/app/tests/LessonControllerTest.php" tests="6" assertions="49" errors="0" warnings="0" failures="0" skipped="0" time="0.300802">
+        <testcase name="testAllLesons" class="App\Tests\LessonControllerTest" classname="App.Tests.LessonControllerTest" file="/app/tests/LessonControllerTest.php" line="22" assertions="5" time="0.087828"/>
+        <testcase name="testCreateLesson" class="App\Tests\LessonControllerTest" classname="App.Tests.LessonControllerTest" file="/app/tests/LessonControllerTest.php" line="71" assertions="6" time="0.047905"/>
+        <testcase name="testLessonValidation" class="App\Tests\LessonControllerTest" classname="App.Tests.LessonControllerTest" file="/app/tests/LessonControllerTest.php" line="131" assertions="14" time="0.051461"/>
+        <testcase name="testEditLesson" class="App\Tests\LessonControllerTest" classname="App.Tests.LessonControllerTest" file="/app/tests/LessonControllerTest.php" line="234" assertions="7" time="0.037015"/>
+        <testcase name="testEditLessonValidation" class="App\Tests\LessonControllerTest" classname="App.Tests.LessonControllerTest" file="/app/tests/LessonControllerTest.php" line="288" assertions="14" time="0.058702"/>
+        <testcase name="testDeleteCourse" class="App\Tests\LessonControllerTest" classname="App.Tests.LessonControllerTest" file="/app/tests/LessonControllerTest.php" line="390" assertions="3" time="0.017891"/>
       </testsuite>
-      <testsuite name="App\Tests\ProfileTest" file="/app/tests/ProfileTest.php" tests="5" assertions="21" errors="0" warnings="0" failures="0" skipped="0" time="0.042788">
-        <testcase name="testProfilePageShowsUserBalance" class="App\Tests\ProfileTest" classname="App.Tests.ProfileTest" file="/app/tests/ProfileTest.php" line="17" assertions="6" time="0.011327"/>
-        <testcase name="testProfilePageShowsAdminRole" class="App\Tests\ProfileTest" classname="App.Tests.ProfileTest" file="/app/tests/ProfileTest.php" line="45" assertions="7" time="0.009472"/>
-        <testcase name="testProfilePageShowsTransactionHistory" class="App\Tests\ProfileTest" classname="App.Tests.ProfileTest" file="/app/tests/ProfileTest.php" line="71" assertions="4" time="0.010042"/>
-        <testcase name="testProfileRedirectsWhenNotAuthenticated" class="App\Tests\ProfileTest" classname="App.Tests.ProfileTest" file="/app/tests/ProfileTest.php" line="99" assertions="2" time="0.005118"/>
-        <testcase name="testProfileHandlesBillingUnavailable" class="App\Tests\ProfileTest" classname="App.Tests.ProfileTest" file="/app/tests/ProfileTest.php" line="114" assertions="2" time="0.006828"/>
+      <testsuite name="App\Tests\ProfileTest" file="/app/tests/ProfileTest.php" tests="5" assertions="21" errors="0" warnings="0" failures="0" skipped="0" time="0.053276">
+        <testcase name="testProfilePageShowsUserBalance" class="App\Tests\ProfileTest" classname="App.Tests.ProfileTest" file="/app/tests/ProfileTest.php" line="17" assertions="6" time="0.016564"/>
+        <testcase name="testProfilePageShowsAdminRole" class="App\Tests\ProfileTest" classname="App.Tests.ProfileTest" file="/app/tests/ProfileTest.php" line="45" assertions="7" time="0.010561"/>
+        <testcase name="testProfilePageShowsTransactionHistory" class="App\Tests\ProfileTest" classname="App.Tests.ProfileTest" file="/app/tests/ProfileTest.php" line="71" assertions="4" time="0.012134"/>
+        <testcase name="testProfileRedirectsWhenNotAuthenticated" class="App\Tests\ProfileTest" classname="App.Tests.ProfileTest" file="/app/tests/ProfileTest.php" line="99" assertions="2" time="0.006151"/>
+        <testcase name="testProfileHandlesBillingUnavailable" class="App\Tests\ProfileTest" classname="App.Tests.ProfileTest" file="/app/tests/ProfileTest.php" line="114" assertions="2" time="0.007865"/>
       </testsuite>
-      <testsuite name="App\Tests\SecurityTest" file="/app/tests/SecurityTest.php" tests="20" assertions="58" errors="0" warnings="0" failures="0" skipped="0" time="0.701719">
-        <testcase name="testLoginAndCourseListWithMockBillingClient" class="App\Tests\SecurityTest" classname="App.Tests.SecurityTest" file="/app/tests/SecurityTest.php" line="20" assertions="5" time="0.010138"/>
-        <testcase name="testUnauthorizedUserCannotAccessLessons" class="App\Tests\SecurityTest" classname="App.Tests.SecurityTest" file="/app/tests/SecurityTest.php" line="50" assertions="3" time="0.007274"/>
-        <testcase name="testUnauthorizedUserCanAccessCoursesList" class="App\Tests\SecurityTest" classname="App.Tests.SecurityTest" file="/app/tests/SecurityTest.php" line="73" assertions="2" time="0.007366"/>
-        <testcase name="testUnauthorizedUserCanAccessCoursePage" class="App\Tests\SecurityTest" classname="App.Tests.SecurityTest" file="/app/tests/SecurityTest.php" line="87" assertions="2" time="0.005751"/>
-        <testcase name="testRegularUserCannotAccessAdminFunctions" class="App\Tests\SecurityTest" classname="App.Tests.SecurityTest" file="/app/tests/SecurityTest.php" line="108" assertions="4" time="0.015934"/>
-        <testcase name="testRegularUserCannotAccessCreateCourseDirectly" class="App\Tests\SecurityTest" classname="App.Tests.SecurityTest" file="/app/tests/SecurityTest.php" line="135" assertions="1" time="0.086705"/>
-        <testcase name="testRegularUserCannotAccessEditCourseDirectly" class="App\Tests\SecurityTest" classname="App.Tests.SecurityTest" file="/app/tests/SecurityTest.php" line="159" assertions="2" time="0.098216"/>
-        <testcase name="testRegularUserCannotDeleteCourseDirectly" class="App\Tests\SecurityTest" classname="App.Tests.SecurityTest" file="/app/tests/SecurityTest.php" line="191" assertions="2" time="0.090886"/>
-        <testcase name="testRegularUserCannotAccessLessonEditDirectly" class="App\Tests\SecurityTest" classname="App.Tests.SecurityTest" file="/app/tests/SecurityTest.php" line="223" assertions="2" time="0.093174"/>
-        <testcase name="testRegularUserCannotDeleteLessonDirectly" class="App\Tests\SecurityTest" classname="App.Tests.SecurityTest" file="/app/tests/SecurityTest.php" line="255" assertions="2" time="0.086333"/>
-        <testcase name="testAdminCanAccessAllFunctions" class="App\Tests\SecurityTest" classname="App.Tests.SecurityTest" file="/app/tests/SecurityTest.php" line="287" assertions="3" time="0.014057"/>
-        <testcase name="testAuthorizedUserCanAccessLessons" class="App\Tests\SecurityTest" classname="App.Tests.SecurityTest" file="/app/tests/SecurityTest.php" line="316" assertions="2" time="0.111977"/>
-        <testcase name="testRegularUserCanViewCoursePage" class="App\Tests\SecurityTest" classname="App.Tests.SecurityTest" file="/app/tests/SecurityTest.php" line="351" assertions="4" time="0.012908"/>
-        <testcase name="testSuccessfulRegistration" class="App\Tests\SecurityTest" classname="App.Tests.SecurityTest" file="/app/tests/SecurityTest.php" line="385" assertions="5" time="0.012460"/>
-        <testcase name="testRegistrationWithInvalidEmail" class="App\Tests\SecurityTest" classname="App.Tests.SecurityTest" file="/app/tests/SecurityTest.php" line="415" assertions="2" time="0.008369"/>
-        <testcase name="testRegistrationWithShortPassword" class="App\Tests\SecurityTest" classname="App.Tests.SecurityTest" file="/app/tests/SecurityTest.php" line="440" assertions="2" time="0.011391"/>
-        <testcase name="testRegistrationWithMismatchedPasswords" class="App\Tests\SecurityTest" classname="App.Tests.SecurityTest" file="/app/tests/SecurityTest.php" line="465" assertions="2" time="0.006157"/>
-        <testcase name="testRegistrationWithEmptyFields" class="App\Tests\SecurityTest" classname="App.Tests.SecurityTest" file="/app/tests/SecurityTest.php" line="490" assertions="2" time="0.006002"/>
-        <testcase name="testAlreadyLoggedInUserRedirectsFromRegistration" class="App\Tests\SecurityTest" classname="App.Tests.SecurityTest" file="/app/tests/SecurityTest.php" line="515" assertions="2" time="0.008040"/>
-        <testcase name="testRegistrationPageDisplaysCorrectly" class="App\Tests\SecurityTest" classname="App.Tests.SecurityTest" file="/app/tests/SecurityTest.php" line="538" assertions="9" time="0.008582"/>
+      <testsuite name="App\Tests\SecurityTest" file="/app/tests/SecurityTest.php" tests="19" assertions="53" errors="0" warnings="0" failures="0" skipped="0" time="0.772195">
+        <testcase name="testUnauthorizedUserCannotAccessLessons" class="App\Tests\SecurityTest" classname="App.Tests.SecurityTest" file="/app/tests/SecurityTest.php" line="22" assertions="3" time="0.006243"/>
+        <testcase name="testUnauthorizedUserCanAccessCoursesList" class="App\Tests\SecurityTest" classname="App.Tests.SecurityTest" file="/app/tests/SecurityTest.php" line="45" assertions="2" time="0.007477"/>
+        <testcase name="testUnauthorizedUserCanAccessCoursePage" class="App\Tests\SecurityTest" classname="App.Tests.SecurityTest" file="/app/tests/SecurityTest.php" line="59" assertions="2" time="0.006393"/>
+        <testcase name="testRegularUserCannotAccessAdminFunctions" class="App\Tests\SecurityTest" classname="App.Tests.SecurityTest" file="/app/tests/SecurityTest.php" line="80" assertions="4" time="0.009951"/>
+        <testcase name="testRegularUserCannotAccessCreateCourseDirectly" class="App\Tests\SecurityTest" classname="App.Tests.SecurityTest" file="/app/tests/SecurityTest.php" line="107" assertions="1" time="0.098656"/>
+        <testcase name="testRegularUserCannotAccessEditCourseDirectly" class="App\Tests\SecurityTest" classname="App.Tests.SecurityTest" file="/app/tests/SecurityTest.php" line="131" assertions="2" time="0.097420"/>
+        <testcase name="testRegularUserCannotDeleteCourseDirectly" class="App\Tests\SecurityTest" classname="App.Tests.SecurityTest" file="/app/tests/SecurityTest.php" line="163" assertions="2" time="0.140479"/>
+        <testcase name="testRegularUserCannotAccessLessonEditDirectly" class="App\Tests\SecurityTest" classname="App.Tests.SecurityTest" file="/app/tests/SecurityTest.php" line="195" assertions="2" time="0.105688"/>
+        <testcase name="testRegularUserCannotDeleteLessonDirectly" class="App\Tests\SecurityTest" classname="App.Tests.SecurityTest" file="/app/tests/SecurityTest.php" line="227" assertions="2" time="0.100008"/>
+        <testcase name="testAdminCanAccessAllFunctions" class="App\Tests\SecurityTest" classname="App.Tests.SecurityTest" file="/app/tests/SecurityTest.php" line="259" assertions="3" time="0.017393"/>
+        <testcase name="testAuthorizedUserCanAccessLessons" class="App\Tests\SecurityTest" classname="App.Tests.SecurityTest" file="/app/tests/SecurityTest.php" line="288" assertions="2" time="0.094129"/>
+        <testcase name="testRegularUserCanViewCoursePage" class="App\Tests\SecurityTest" classname="App.Tests.SecurityTest" file="/app/tests/SecurityTest.php" line="323" assertions="4" time="0.015156"/>
+        <testcase name="testSuccessfulRegistration" class="App\Tests\SecurityTest" classname="App.Tests.SecurityTest" file="/app/tests/SecurityTest.php" line="357" assertions="5" time="0.014981"/>
+        <testcase name="testRegistrationWithInvalidEmail" class="App\Tests\SecurityTest" classname="App.Tests.SecurityTest" file="/app/tests/SecurityTest.php" line="387" assertions="2" time="0.009731"/>
+        <testcase name="testRegistrationWithShortPassword" class="App\Tests\SecurityTest" classname="App.Tests.SecurityTest" file="/app/tests/SecurityTest.php" line="412" assertions="2" time="0.009351"/>
+        <testcase name="testRegistrationWithMismatchedPasswords" class="App\Tests\SecurityTest" classname="App.Tests.SecurityTest" file="/app/tests/SecurityTest.php" line="437" assertions="2" time="0.014823"/>
+        <testcase name="testRegistrationWithEmptyFields" class="App\Tests\SecurityTest" classname="App.Tests.SecurityTest" file="/app/tests/SecurityTest.php" line="462" assertions="2" time="0.008073"/>
+        <testcase name="testAlreadyLoggedInUserRedirectsFromRegistration" class="App\Tests\SecurityTest" classname="App.Tests.SecurityTest" file="/app/tests/SecurityTest.php" line="487" assertions="2" time="0.008341"/>
+        <testcase name="testRegistrationPageDisplaysCorrectly" class="App\Tests\SecurityTest" classname="App.Tests.SecurityTest" file="/app/tests/SecurityTest.php" line="510" assertions="9" time="0.007901"/>
       </testsuite>
     </testsuite>
   </testsuite>

@@ -164,9 +164,8 @@ class CourseService
         }
     }
 
-    public function updateCourseWithBilling(Course $course, string $newSymbolCode, string $courseType, ?float $coursePrice): array
+    public function updateCourseWithBillingFixed(string $originalSymbolCode, Course $course, string $newSymbolCode, string $courseType, ?float $coursePrice): array
     {
-        $oldSymbolCode = $course->getSymbolCode();
         
         // Получаем токен пользователя
         $token = $this->tokenStorage->getToken();
@@ -199,8 +198,22 @@ class CourseService
         }
 
         try {
-            // Обновляем курс в биллинге (используем старый символьный код в URL)
-            $billingResponse = $this->billingClient->updateCourse($apiToken, $oldSymbolCode, $billingData);
+            // Логируем для отладки
+            error_log("Updating course: original='{$originalSymbolCode}', new='{$newSymbolCode}'");
+            
+            // Если код изменился, проверим, что новый код не занят
+            if ($newSymbolCode !== $originalSymbolCode) {
+                $existingCourse = $this->getCourseFromBilling($newSymbolCode);
+                if ($existingCourse) {
+                    return [
+                        'success' => false,
+                        'errors' => ['billing' => 'Курс с кодом "' . $newSymbolCode . '" уже существует в биллинге']
+                    ];
+                }
+            }
+
+            // Используем оригинальный код в URL для обновления
+            $billingResponse = $this->billingClient->updateCourse($apiToken, $originalSymbolCode, $billingData);
             
             if (!isset($billingResponse['success']) || !$billingResponse['success']) {
                 return [
@@ -209,8 +222,7 @@ class CourseService
                 ];
             }
 
-            // Если в биллинге все успешно, обновляем курс в StudyOn
-            $course->setSymbolCode($newSymbolCode);
+            // Если в биллинге все успешно, сохраняем изменения в StudyOn
             $this->entityManager->flush();
 
             return [
@@ -402,9 +414,13 @@ class CourseService
     {
         $courseType = $formData['courseType'];
         $coursePrice = $formData['coursePrice'];
+        $originalSymbolCode = $formData['originalSymbolCode'];
+        
+        // Новый код из обновленного объекта
         $newSymbolCode = $course->getSymbolCode();
 
-        $result = $this->updateCourseWithBilling(
+        $result = $this->updateCourseWithBillingFixed(
+            $originalSymbolCode,
             $course,
             $newSymbolCode,
             $courseType,

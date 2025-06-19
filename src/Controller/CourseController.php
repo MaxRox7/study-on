@@ -90,6 +90,9 @@ class CourseController extends AbstractController
             throw $this->createNotFoundException('Курс не найден');
         }
 
+        // Сохраняем оригинальный код до обработки формы
+        $originalSymbolCode = $course->getSymbolCode();
+        
         $form = $this->createForm(CourseType::class, $course);
         
         // Устанавливаем значения из биллинга для unmapped полей
@@ -107,6 +110,7 @@ class CourseController extends AbstractController
             $formData = [
                 'courseType' => $form->get('courseType')->getData(),
                 'coursePrice' => $form->get('coursePrice')->getData(),
+                'originalSymbolCode' => $originalSymbolCode,
             ];
 
             $result = $this->courseService->handleCourseUpdate($course, $formData);

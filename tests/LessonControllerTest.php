@@ -163,38 +163,72 @@ class LessonControllerTest extends WebTestCase
 
         // Отправляем запрос на страницу курса
         $crawler = $client->request('GET', '/courses/'.$course->getIdCourse());
-
-        // Проверка, что страница загрузилась
         $this->assertResponseIsSuccessful();
 
-        // Заполняем форму добавления урока
+        // 1. Проверка ошибки при слишком коротком titleLesson
         $form = $crawler->selectButton('Добавить урок')->form();
-
-        // Исправленный путь к полям формы
-        $form['lesson[titleLesson]'] = 'ff';
+        $form['lesson[titleLesson]'] = 'ff';  // Всего 2 символа - меньше 3
         $form['lesson[content]'] = 'Lesson content here.';
         $form['lesson[orderNumber]'] = 1;
-
-        // Отправляем форму
         $client->submit($form);
-        // Проверка наличия ошибки для поля symbolCode
         $this->assertResponseIsSuccessful();
-        $this->assertSelectorExists('.invalid-feedback'); // проверяем наличие блока ошибки
+        $crawler = $client->getCrawler(); // Обновляем crawler после submit
 
+        // Проверяем ошибку конкретно для поля titleLesson
+        $titleLessonField = $crawler->filter('#lesson_titleLesson');
+        $this->assertCount(1, $titleLessonField, 'Поле titleLesson должно существовать');
+        
+        // Ищем ошибку в родительском контейнере поля titleLesson
+        $titleLessonContainer = $titleLessonField->ancestors()->filter('.mb-3')->first();
+        $errorElements = $titleLessonContainer->filter('.invalid-feedback');
+        $this->assertGreaterThan(0, $errorElements->count(), 'Должен быть элемент с ошибкой для titleLesson');
+        
+        $errorText = $errorElements->text();
+        $this->assertStringContainsString('Название урока должно содержать минимум', $errorText, 'Ошибка валидации должна быть именно для поля titleLesson');
+
+        // 2. Проверка ошибки при слишком коротком content
+        $crawler = $client->request('GET', '/courses/'.$course->getIdCourse());
+        $form = $crawler->selectButton('Добавить урок')->form();
         $form['lesson[titleLesson]'] = 'Title_lesson';
-        $form['lesson[content]'] = '1';
+        $form['lesson[content]'] = '1';  // Всего 1 символ - меньше 3
         $form['lesson[orderNumber]'] = 1;
         $client->submit($form);
         $this->assertResponseIsSuccessful();
-        $this->assertSelectorExists('.invalid-feedback'); // проверяем наличие блока ошибки
+        $crawler = $client->getCrawler(); // Обновляем crawler после submit
 
+        // Проверяем ошибку конкретно для поля content
+        $contentField = $crawler->filter('#lesson_content');
+        $this->assertCount(1, $contentField, 'Поле content должно существовать');
+        
+        // Ищем ошибку в родительском контейнере поля content
+        $contentContainer = $contentField->ancestors()->filter('.mb-3')->first();
+        $errorElements = $contentContainer->filter('.invalid-feedback');
+        $this->assertGreaterThan(0, $errorElements->count(), 'Должен быть элемент с ошибкой для content');
+        
+        $errorText = $errorElements->text();
+        $this->assertStringContainsString('Содержимое урока должно содержать минимум', $errorText, 'Ошибка валидации должна быть именно для поля content');
+
+        // 3. Проверка ошибки при некорректном orderNumber
+        $crawler = $client->request('GET', '/courses/'.$course->getIdCourse());
+        $form = $crawler->selectButton('Добавить урок')->form();
         $form['lesson[titleLesson]'] = 'Title_lesson';
         $form['lesson[content]'] = 'content';
-        $form['lesson[orderNumber]'] = 'a';
-
+        $form['lesson[orderNumber]'] = 'a';  // Не число
         $client->submit($form);
         $this->assertResponseIsSuccessful();
-        $this->assertSelectorExists('.invalid-feedback'); // проверяем наличие блока ошибки
+        $crawler = $client->getCrawler(); // Обновляем crawler после submit
+
+        // Проверяем ошибку конкретно для поля orderNumber
+        $orderNumberField = $crawler->filter('#lesson_orderNumber');
+        $this->assertCount(1, $orderNumberField, 'Поле orderNumber должно существовать');
+        
+        // Ищем ошибку в родительском контейнере поля orderNumber
+        $orderNumberContainer = $orderNumberField->ancestors()->filter('.mb-3')->first();
+        $errorElements = $orderNumberContainer->filter('.invalid-feedback');
+        $this->assertGreaterThan(0, $errorElements->count(), 'Должен быть элемент с ошибкой для orderNumber');
+        
+        $errorText = $errorElements->text();
+        $this->assertStringContainsString('Please enter an integer', $errorText, 'Ошибка валидации должна быть именно для поля orderNumber');
     }
 
     public function testEditLesson(): void
@@ -281,40 +315,53 @@ class LessonControllerTest extends WebTestCase
         $crawler = $client->click($editLink);
         $this->assertResponseIsSuccessful();
 
-        // Заполняем форму редактирования урока новыми данными
+        // 1. Проверка ошибки при слишком коротком titleLesson
         $form = $crawler->selectButton('Сохранить')->form();
-
-        // Исправленный путь к полям формы
-        $form['lesson[titleLesson]'] = 'ff';
+        $form['lesson[titleLesson]'] = 'ff';  // Всего 2 символа - меньше 3
         $form['lesson[content]'] = 'Lesson content here.';
         $form['lesson[orderNumber]'] = 1;
-
-        // Отправляем форму
         $client->submit($form);
         $this->assertResponseIsSuccessful();
-        
-        // Обновляем crawler и проверяем ошибки валидации через правильные селекторы
         $crawler = $client->getCrawler();
-        
-        // Для форм Symfony ошибки отображаются в самой форме через .invalid-feedback
-        $this->assertSelectorExists('.invalid-feedback');
 
-        // Возвращаемся на форму редактирования для следующих тестов
+        // Проверяем ошибку конкретно для поля titleLesson (в форме редактирования используется .form-floating)
+        $titleLessonField = $crawler->filter('#lesson_titleLesson');
+        $this->assertCount(1, $titleLessonField, 'Поле titleLesson должно существовать');
+        
+        // Ищем ошибку в родительском контейнере поля titleLesson
+        $titleLessonContainer = $titleLessonField->ancestors()->filter('.form-floating')->first();
+        $errorElements = $titleLessonContainer->filter('.invalid-feedback');
+        $this->assertGreaterThan(0, $errorElements->count(), 'Должен быть элемент с ошибкой для titleLesson');
+        
+        $errorText = $errorElements->text();
+        $this->assertStringContainsString('Название урока должно содержать минимум', $errorText, 'Ошибка валидации должна быть именно для поля titleLesson');
+
+        // 2. Проверка ошибки при слишком коротком content
         $crawler = $client->request('GET', '/courses/1');
         $editLink = $crawler->selectLink('Редактировать')->link();
         $crawler = $client->click($editLink);
         
         $form = $crawler->selectButton('Сохранить')->form();
         $form['lesson[titleLesson]'] = 'Title_lesson';
-        $form['lesson[content]'] = '1';
+        $form['lesson[content]'] = '1';  // Всего 1 символ - меньше 3
         $form['lesson[orderNumber]'] = 1;
-
         $client->submit($form);
         $this->assertResponseIsSuccessful();
         $crawler = $client->getCrawler();
-        $this->assertSelectorExists('.invalid-feedback');
 
-        // Возвращаемся на форму редактирования для третьего теста
+        // Проверяем ошибку конкретно для поля content
+        $contentField = $crawler->filter('#lesson_content');
+        $this->assertCount(1, $contentField, 'Поле content должно существовать');
+        
+        // Ищем ошибку в родительском контейнере поля content
+        $contentContainer = $contentField->ancestors()->filter('.form-floating')->first();
+        $errorElements = $contentContainer->filter('.invalid-feedback');
+        $this->assertGreaterThan(0, $errorElements->count(), 'Должен быть элемент с ошибкой для content');
+        
+        $errorText = $errorElements->text();
+        $this->assertStringContainsString('Содержимое урока должно содержать минимум', $errorText, 'Ошибка валидации должна быть именно для поля content');
+
+        // 3. Проверка ошибки при некорректном orderNumber
         $crawler = $client->request('GET', '/courses/1');
         $editLink = $crawler->selectLink('Редактировать')->link();
         $crawler = $client->click($editLink);
@@ -322,12 +369,22 @@ class LessonControllerTest extends WebTestCase
         $form = $crawler->selectButton('Сохранить')->form();
         $form['lesson[titleLesson]'] = 'Title_lesson';
         $form['lesson[content]'] = 'content';
-        $form['lesson[orderNumber]'] = 'a';
-
+        $form['lesson[orderNumber]'] = 'a';  // Не число
         $client->submit($form);
         $this->assertResponseIsSuccessful();
         $crawler = $client->getCrawler();
-        $this->assertSelectorExists('.invalid-feedback');
+
+        // Проверяем ошибку конкретно для поля orderNumber
+        $orderNumberField = $crawler->filter('#lesson_orderNumber');
+        $this->assertCount(1, $orderNumberField, 'Поле orderNumber должно существовать');
+        
+        // Ищем ошибку в родительском контейнере поля orderNumber
+        $orderNumberContainer = $orderNumberField->ancestors()->filter('.form-floating')->first();
+        $errorElements = $orderNumberContainer->filter('.invalid-feedback');
+        $this->assertGreaterThan(0, $errorElements->count(), 'Должен быть элемент с ошибкой для orderNumber');
+        
+        $errorText = $errorElements->text();
+        $this->assertStringContainsString('Please enter an integer', $errorText, 'Ошибка валидации должна быть именно для поля orderNumber');
     }
 
     public function testDeleteCourse(): void

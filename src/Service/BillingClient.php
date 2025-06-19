@@ -72,6 +72,9 @@ class BillingClient
         // Декодирование ответа
         $decodedResponse = json_decode($response, true);
 
+        // Логируем ответ сервера
+        $this->logger->info('Response from server: ' . $response);
+
         // Если сервер вернул пустой ответ или некорректный JSON
         if ($decodedResponse === null) {
             $this->logger->error('Invalid response from server: ' . $response);

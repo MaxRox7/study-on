@@ -37,6 +37,7 @@ class Course
     private ?string $titleCourse = null;
 
     #[ORM\Column(type: 'text', length: 1000, nullable: true)]
+    #[Assert\NotBlank(message: 'Описание курса обязательно.')]
     #[Assert\Length(
         min: 3,
         max: 1000,

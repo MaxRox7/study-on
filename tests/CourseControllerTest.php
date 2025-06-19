@@ -172,8 +172,14 @@ class CourseControllerTest extends WebTestCase
         $this->assertResponseIsSuccessful();
         $crawler = $client->getCrawler(); // Обновляем crawler после submit
         
-        // Проверяем наличие ошибки валидации
-        $this->assertStringContainsString('Символьный код должен содержать минимум', $client->getResponse()->getContent());
+        // Проверяем ошибку конкретно для поля symbolCode
+        $symbolCodeField = $crawler->filter('#course_symbolCode');
+        $this->assertCount(1, $symbolCodeField, 'Поле symbolCode должно существовать');
+        
+        // Ищем ошибку в родительском контейнере поля symbolCode
+        $symbolCodeContainer = $symbolCodeField->ancestors()->filter('.mb-3')->first();
+        $errorText = $symbolCodeContainer->filter('.help-block')->text();
+        $this->assertStringContainsString('Символьный код должен содержать минимум', $errorText, 'Ошибка валидации должна быть именно для поля symbolCode');
 
         // 2. Проверка ошибки при слишком коротком title_course  
         $crawler = $client->request('GET', '/courses/create');
@@ -184,9 +190,16 @@ class CourseControllerTest extends WebTestCase
         $form['course[courseType]'] = 'free';
         $client->submit($form);
         $this->assertResponseIsSuccessful();
+        $crawler = $client->getCrawler(); // Обновляем crawler после submit
         
-        // Проверяем наличие ошибки валидации для titleCourse
-        $this->assertStringContainsString('Название курса должно содержать минимум', $client->getResponse()->getContent());
+        // Проверяем ошибку конкретно для поля titleCourse
+        $titleCourseField = $crawler->filter('#course_titleCourse');
+        $this->assertCount(1, $titleCourseField, 'Поле titleCourse должно существовать');
+        
+        // Ищем ошибку в родительском контейнере поля titleCourse
+        $titleCourseContainer = $titleCourseField->ancestors()->filter('.mb-3')->first();
+        $errorText = $titleCourseContainer->filter('.help-block')->text();
+        $this->assertStringContainsString('Название курса должно содержать минимум', $errorText, 'Ошибка валидации должна быть именно для поля titleCourse');
 
         // 3. Проверка ошибки при слишком коротком description
         $crawler = $client->request('GET', '/courses/create');
@@ -197,9 +210,16 @@ class CourseControllerTest extends WebTestCase
         $form['course[courseType]'] = 'free';
         $client->submit($form);
         $this->assertResponseIsSuccessful();
+        $crawler = $client->getCrawler(); // Обновляем crawler после submit
         
-        // Проверяем наличие ошибки валидации для description
-        $this->assertStringContainsString('Описание курса должно содержать минимум', $client->getResponse()->getContent());
+        // Проверяем ошибку конкретно для поля description
+        $descriptionField = $crawler->filter('#course_description');
+        $this->assertCount(1, $descriptionField, 'Поле description должно существовать');
+        
+        // Ищем ошибку в родительском контейнере поля description
+        $descriptionContainer = $descriptionField->ancestors()->filter('.mb-3')->first();
+        $errorText = $descriptionContainer->filter('.help-block')->text();
+        $this->assertStringContainsString('Описание курса должно содержать минимум', $errorText, 'Ошибка валидации должна быть именно для поля description');
     }
 
     public function testCourseEditForm(): void
@@ -278,43 +298,73 @@ class CourseControllerTest extends WebTestCase
         $crawler = $client->request('GET', '/courses/1/edit');
         $this->assertResponseIsSuccessful();
 
-        // Проверка ошибки при слишком коротком symbolCode
+        // 1. Проверка ошибки при слишком коротком symbolCode
         $form = $crawler->selectButton('Сохранить изменения')->form();
         $form['course[symbolCode]'] = 'ff'; // слишком короткий код
         $form['course[titleCourse]'] = 'Основы программирования';
         $form['course[description]'] = 'Курс по основам программирования на Python.';
         $form['course[courseType]'] = 'free';
-        $crawler = $client->submit($form);
-
-        // Проверка наличия ошибки для поля symbolCode
+        $client->submit($form);
         $this->assertResponseIsSuccessful();
-        $this->assertSelectorExists('.help-block'); // проверяем наличие блока ошибки
+        $crawler = $client->getCrawler(); // Обновляем crawler после submit
 
+        // Проверяем ошибку конкретно для поля symbolCode
+        $symbolCodeField = $crawler->filter('#course_symbolCode');
+        $this->assertCount(1, $symbolCodeField, 'Поле symbolCode должно существовать');
+        
+        // Ищем ошибку в родительском контейнере поля symbolCode
+        $symbolCodeContainer = $symbolCodeField->ancestors()->filter('.mb-4')->first();
+        $errorElements = $symbolCodeContainer->filter('.help-block, .invalid-feedback');
+        $this->assertGreaterThan(0, $errorElements->count(), 'Должен быть элемент с ошибкой для symbolCode');
+        
+        $errorText = $errorElements->text();
+        $this->assertStringContainsString('Символьный код должен содержать минимум', $errorText, 'Ошибка валидации должна быть именно для поля symbolCode');
 
-
-        // Проверка ошибки при слишком коротком titleCourse
+        // 2. Проверка ошибки при слишком коротком titleCourse
+        $crawler = $client->request('GET', '/courses/1/edit');
         $form = $crawler->selectButton('Сохранить изменения')->form();
         $form['course[symbolCode]'] = 'CS101';
         $form['course[titleCourse]'] = 'ff'; // слишком короткое название
         $form['course[description]'] = 'Курс по основам программирования на Python.';
         $form['course[courseType]'] = 'free';
-        $crawler = $client->submit($form);
-
-        // Проверка наличия ошибки для поля titleCourse
+        $client->submit($form);
         $this->assertResponseIsSuccessful();
-        $this->assertSelectorExists('.invalid-feedback'); // проверяем наличие блока ошибки
+        $crawler = $client->getCrawler(); // Обновляем crawler после submit
 
-        // Проверка ошибки при слишком коротком description
+        // Проверяем ошибку конкретно для поля titleCourse
+        $titleCourseField = $crawler->filter('#course_titleCourse');
+        $this->assertCount(1, $titleCourseField, 'Поле titleCourse должно существовать');
+        
+        // Ищем ошибку в родительском контейнере поля titleCourse
+        $titleCourseContainer = $titleCourseField->ancestors()->filter('.mb-4')->first();
+        $errorElements = $titleCourseContainer->filter('.help-block, .invalid-feedback');
+        $this->assertGreaterThan(0, $errorElements->count(), 'Должен быть элемент с ошибкой для titleCourse');
+        
+        $errorText = $errorElements->text();
+        $this->assertStringContainsString('Название курса должно содержать минимум', $errorText, 'Ошибка валидации должна быть именно для поля titleCourse');
+
+        // 3. Проверка ошибки при слишком коротком description
+        $crawler = $client->request('GET', '/courses/1/edit');
         $form = $crawler->selectButton('Сохранить изменения')->form();
         $form['course[symbolCode]'] = 'CS101';
         $form['course[titleCourse]'] = 'Основы программирования';
         $form['course[description]'] = 'ff'; // слишком короткое описание
         $form['course[courseType]'] = 'free';
-        $crawler = $client->submit($form);
-
-        // Проверка наличия ошибки для поля description
+        $client->submit($form);
         $this->assertResponseIsSuccessful();
-        $this->assertSelectorExists('.invalid-feedback'); // проверяем наличие блока ошибки
+        $crawler = $client->getCrawler(); // Обновляем crawler после submit
+
+        // Проверяем ошибку конкретно для поля description
+        $descriptionField = $crawler->filter('#course_description');
+        $this->assertCount(1, $descriptionField, 'Поле description должно существовать');
+        
+        // Ищем ошибку в родительском контейнере поля description
+        $descriptionContainer = $descriptionField->ancestors()->filter('.mb-4')->first();
+        $errorElements = $descriptionContainer->filter('.help-block, .invalid-feedback');
+        $this->assertGreaterThan(0, $errorElements->count(), 'Должен быть элемент с ошибкой для description');
+        
+        $errorText = $errorElements->text();
+        $this->assertStringContainsString('Описание курса должно содержать минимум', $errorText, 'Ошибка валидации должна быть именно для поля description');
     }
 
     public function testDeleteCourse(): void
