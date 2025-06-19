@@ -27,8 +27,11 @@ encore_dev:
 encore_prod:
 	@ yarn encore production
 
-phpunit:
+phpunit-dox:
 	@${PHP} bin/phpunit --testdox
+
+phpunit:
+	@${PHP} bin/phpunit
 
 phpunit-clean:
 	@${PHP} bin/phpunit --no-output
