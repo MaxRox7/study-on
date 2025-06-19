@@ -1,7 +1,7 @@
 name: CI
 on:
   push:
-    branches: [ "new-branch" ]
+    branches: [ "master" ]
   workflow_dispatch:
 jobs:
   build:
