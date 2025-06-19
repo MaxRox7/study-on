@@ -39,8 +39,6 @@ final class Version20250327212705 extends AbstractMigration
                 title_lesson VARCHAR(255) NOT NULL,
                 content TEXT NOT NULL,
                 order_number INT NOT NULL,
-                name_lesson VARCHAR(50) NOT NULL,
-                status_lesson VARCHAR(50) NOT NULL,
                 PRIMARY KEY(id_lesson)
             )
         SQL);
