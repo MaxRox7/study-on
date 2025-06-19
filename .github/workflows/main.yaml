@@ -30,7 +30,7 @@ jobs:
           sudo chmod +x /usr/local/bin/docker-compose
           docker-compose --version
           mkdir ~/.yarn
-        # нужно создать сеть, так как в github Actions study-on изолирован от биллинга
+          # нужно создать сеть, так как в github Actions study-on изолирован от биллинга
           docker network create study-onbilling_default
           docker-compose build
           docker-compose up -d
