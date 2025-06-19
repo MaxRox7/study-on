@@ -21,13 +21,28 @@ final class Version20250327212705 extends AbstractMigration
     {
         // this up() migration is auto-generated, please modify it to your needs
         $this->addSql(<<<'SQL'
-            CREATE TABLE course (id_course SERIAL NOT NULL, symbol_code VARCHAR(255) NOT NULL, title VARCHAR(255) NOT NULL, description TEXT DEFAULT NULL, PRIMARY KEY(id_course))
+            CREATE TABLE course (
+                id_course SERIAL NOT NULL,
+                symbol_code VARCHAR(255) NOT NULL,
+                title_course VARCHAR(255) NOT NULL,
+                description TEXT DEFAULT NULL,
+                PRIMARY KEY(id_course)
+            )
         SQL);
         $this->addSql(<<<'SQL'
             CREATE UNIQUE INDEX UNIQ_169E6FB9D723AECA ON course (symbol_code)
         SQL);
         $this->addSql(<<<'SQL'
-            CREATE TABLE lesson (id_lesson SERIAL NOT NULL, id_course INT NOT NULL, title VARCHAR(255) NOT NULL, content TEXT NOT NULL, order_number INT NOT NULL, PRIMARY KEY(id_lesson))
+            CREATE TABLE lesson (
+                id_lesson SERIAL NOT NULL,
+                id_course INT NOT NULL,
+                title_lesson VARCHAR(255) NOT NULL,
+                content TEXT NOT NULL,
+                order_number INT NOT NULL,
+                name_lesson VARCHAR(50) NOT NULL,
+                status_lesson VARCHAR(50) NOT NULL,
+                PRIMARY KEY(id_lesson)
+            )
         SQL);
         $this->addSql(<<<'SQL'
             CREATE INDEX IDX_F87474F330A9DA54 ON lesson (id_course)
