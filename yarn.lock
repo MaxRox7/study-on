@@ -1019,13 +1019,8 @@
     loader-utils "^2.0.0"
     schema-utils "^3.0.0"
 
-"@symfony/stimulus-bundle@^2.24.0":
-  version "2.24.0"
-  resolved "https://registry.yarnpkg.com/@symfony/stimulus-bundle/-/stimulus-bundle-2.24.0.tgz#322b083d2e4d52ba98c0e8d0f2b7708ed731ced4"
-  integrity sha512-8YUmBiypaJsSPMKMJoHZm0AbNQ/pVxdpwUgJI3xu4dpwUhwPvQc20BQORuhdpAsaZP5y4zEIsvFDDuHcwPk1Ow==
-
 "@symfony/ux-turbo@file:vendor/symfony/ux-turbo/assets":
-  version "0.1.0"
+  version "2.26.0"
 
 "@symfony/webpack-encore@^5.1.0":
   version "5.1.0"
